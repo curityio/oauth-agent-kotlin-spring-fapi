@@ -1,0 +1,23 @@
+bff:
+  clientID: 'spa-client'
+  clientSecret: 'Password1'
+  redirectUri: 'http://www.example.com/'
+  postLogoutRedirectURI: 'http://www.example.com/'
+  scope: 'openid profile'
+
+  encKey: 'NF65meV>Ls#8GP>;!Cnov)rIPRoK^.NP'
+  salt: 'NF62meS>Ls%83P>;!Cdfv)rHTRoK!F)P'
+  cookieNamePrefix: 'example'
+  bffEndpointsPrefix: '/bff'
+  cookieSerializeOptions:
+    httpOnly: true
+    sameSite: true
+    secure: false
+    domain: '.example.com'
+    path: '/'
+
+  trustedWebOrigins: [ 'http://www.example.com' ]
+  authorizeEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-authorize'
+  logoutEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-session/logout'
+  tokenEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-token'
+
