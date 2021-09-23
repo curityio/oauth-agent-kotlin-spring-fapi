@@ -12,7 +12,8 @@ class ExceptionController
 {
     @ExceptionHandler(BFFException::class)
     @ResponseBody
-    fun handleException(exception: BFFException, response: HttpServletResponse): ErrorMessage {
+    fun handleException(exception: BFFException, response: HttpServletResponse): ErrorMessage
+    {
         logger.info("Exception occured during request: {}", exception.logMessage, exception)
 
         response.status = exception.statusCode
@@ -23,7 +24,8 @@ class ExceptionController
         )
     }
 
-    companion object {
+    companion object
+    {
         private val logger = LoggerFactory.getLogger(ExceptionController::class.java)
     }
 }

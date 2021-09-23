@@ -7,20 +7,17 @@ import io.curity.bff.CookieEncrypter
 import io.curity.bff.CookieName
 import io.curity.bff.RequestValidator
 import io.curity.bff.ValidateRequestOptions
-import io.curity.bff.encodeURI
-import io.curity.bff.hash
+import io.curity.bff.exception.InvalidResponseJwtException
+import io.curity.bff.generateRandomString
+import org.jose4j.jwt.consumer.InvalidJwtException
+import org.jose4j.jwt.consumer.JwtConsumer
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.util.UriComponentsBuilder
 import org.springframework.web.util.WebUtils
-import java.net.URI
-import java.net.URL
-import java.security.SecureRandom
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -28,10 +25,18 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @CrossOrigin
 @RequestMapping("/\${bff.bffEndpointsPrefix}/login")
-class LoginController(private val config: BFFConfiguration, private val cookieName: CookieName, private val cookieEncrypter: CookieEncrypter, private val authorizationServerClient: AuthorizationServerClient, private val requestValidator: RequestValidator)
+class LoginController(
+    private val config: BFFConfiguration,
+    private val cookieName: CookieName,
+    private val cookieEncrypter: CookieEncrypter,
+    private val authorizationServerClient: AuthorizationServerClient,
+    private val requestValidator: RequestValidator,
+    private val jwtConsumer: JwtConsumer
+)
 {
     @PostMapping("/start")
-    fun startLogin(request: HttpServletRequest, response: HttpServletResponse): StartAuthorizationResponse {
+    fun startLogin(request: HttpServletRequest, response: HttpServletResponse): StartAuthorizationResponse
+    {
 
         requestValidator.validateServletRequest(
             request,
@@ -40,7 +45,8 @@ class LoginController(private val config: BFFConfiguration, private val cookieNa
 
         val authorizationRequestData = getAuthorizationURL()
 
-        val encryptedCookieValue = cookieEncrypter.getEncryptedCookie(cookieName.tempLoginData, authorizationRequestData.toJSONString())
+        val encryptedCookieValue =
+            cookieEncrypter.getEncryptedCookie(cookieName.tempLoginData, authorizationRequestData.toJSONString())
 
         response.addHeader("Set-Cookie", encryptedCookieValue)
 
@@ -48,7 +54,12 @@ class LoginController(private val config: BFFConfiguration, private val cookieNa
     }
 
     @PostMapping("/end", consumes = ["application/json"])
-    fun handlePageLoad(request: HttpServletRequest, response: HttpServletResponse, @RequestBody body: EndAuthorizationRequest): EndAuthorizationResponse {
+    fun handlePageLoad(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        @RequestBody body: EndAuthorizationRequest
+    ): EndAuthorizationResponse
+    {
         requestValidator.validateServletRequest(
             request,
             ValidateRequestOptions(requireCsrfHeader = false)
@@ -60,15 +71,19 @@ class LoginController(private val config: BFFConfiguration, private val cookieNa
         val isLoggedIn: Boolean
         var csrfToken: String? = null
 
-        if (isOAuthResponse) {
+        if (isOAuthResponse)
+        {
             val tempLoginData = request.getCookie(cookieName.tempLoginData)
-            val tokenResponse = authorizationServerClient.getTokens(tempLoginData, queryParams.code!!, queryParams.state!!)
+            val tokenResponse =
+                authorizationServerClient.getTokens(tempLoginData, queryParams.code!!, queryParams.state!!)
 
             // Avoid setting a new value if the user opens two browser tabs and signs in on both
             val csrfCookie = request.getCookie(cookieName.csrf)
-            csrfToken = if (csrfCookie == null) {
+            csrfToken = if (csrfCookie == null)
+            {
                 generateRandomString()
-            } else {
+            } else
+            {
                 cookieEncrypter.decryptValueFromCookie(csrfCookie)
             }
 
@@ -79,11 +94,13 @@ class LoginController(private val config: BFFConfiguration, private val cookieNa
             }
 
             isLoggedIn = true
-        } else {
+        } else
+        {
             // See if we have a session cookie
             isLoggedIn = request.getCookie(cookieName.accessToken) != null
 
-            if (isLoggedIn) {
+            if (isLoggedIn)
+            {
                 // During an authenticated page refresh or opening a new browser tab, we must return the anti forgery token
                 // This enables an XSS attack to get the value, but this is standard for CSRF tokens
                 csrfToken = cookieEncrypter.decryptValueFromCookie(request.getCookie(cookieName.csrf)!!)
@@ -102,47 +119,40 @@ class LoginController(private val config: BFFConfiguration, private val cookieNa
         val codeVerifier = generateRandomString()
         val state = generateRandomString()
 
-        val authorizationURLBuilder = UriComponentsBuilder.fromHttpUrl(config.authorizeEndpoint)
-            .queryParam("client_id", config.clientID.encodeURI())
-            .queryParam("state", state.encodeURI())
-            .queryParam("response_type", "code")
-            .queryParam("redirect_uri", config.redirectUri.encodeURI())
-            .queryParam("code_challenge", codeVerifier.hash().encodeURI())
-            .queryParam("code_challenge_method", "S256")
-
-        if (config.scope != null) {
-            authorizationURLBuilder.queryParam("scope", config.scope!!.encodeURI())
-        }
+        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier)
 
         return AuthorizationRequestData(
-            authorizationURLBuilder.build().toUriString(),
+            authorizationRequestUrl,
             codeVerifier,
             state
         )
     }
 
-    private fun generateRandomString(): String {
-        val leftLimit = 48 // numeral '0'
-        val rightLimit = 122 // letter 'z'
-
-        val targetStringLength = 64L
-        val random = SecureRandom()
-
-        return random.ints(leftLimit, rightLimit + 1)
-            .filter { i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97) }
-            .limit(targetStringLength)
-            .collect({ StringBuilder() }, java.lang.StringBuilder::appendCodePoint, java.lang.StringBuilder::append)
-            .toString()
-    }
-
-    private fun getOAuthQueryParams(pageUrl: String?): OAuthQueryParams {
-        if (pageUrl == null) {
+    private fun getOAuthQueryParams(pageUrl: String?): OAuthQueryParams
+    {
+        if (pageUrl == null)
+        {
             return OAuthQueryParams(null, null)
         }
 
         val queryParams = UriComponentsBuilder.fromUriString(pageUrl).build().queryParams
 
-        return OAuthQueryParams(queryParams["code"]?.first(), queryParams["state"]?.first())
+        if (queryParams["response"] == null)
+        {
+            return OAuthQueryParams(null, null)
+        }
+
+        try
+        {
+            val responseClaims = jwtConsumer.processToClaims(queryParams["response"]!!.first())
+            return OAuthQueryParams(
+                responseClaims.getStringClaimValue("code"),
+                responseClaims.getStringClaimValue("state")
+            )
+        } catch (exception: InvalidJwtException)
+        {
+            throw InvalidResponseJwtException(exception)
+        }
     }
 
     fun HttpServletRequest.getCookie(cookieName: String): String? =

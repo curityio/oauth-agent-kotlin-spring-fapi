@@ -17,6 +17,8 @@ bff:
     path: '/'
 
   trustedWebOrigins: [ 'http://www.example.com' ]
+  issuer: 'http://login.example.com:8443/oauth/v2/oauth-anonymous'
+  jwksUri: 'http://login.example.com:8443/oauth/v2/oauth-anonymous/jwks'
   authorizeEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-authorize'
   logoutEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-session/logout'
   tokenEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-token'

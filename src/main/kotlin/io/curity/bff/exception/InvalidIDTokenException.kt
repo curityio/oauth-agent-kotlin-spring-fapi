@@ -8,5 +8,5 @@ class InvalidIDTokenException(cause: Throwable?) : BFFException(
     null
 )
 {
-    constructor(): this(null)
+    constructor() : this(null)
 }

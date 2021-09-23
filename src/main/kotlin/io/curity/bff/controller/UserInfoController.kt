@@ -13,11 +13,17 @@ import javax.servlet.http.HttpServletRequest
 
 @RestController
 @RequestMapping("/\${bff.bffEndpointsPrefix}/userInfo")
-class UserInfoController(private val requestValidator: RequestValidator, private val userInfo: UserInfo, private val cookieName: CookieName)
+class UserInfoController(
+    private val requestValidator: RequestValidator,
+    private val userInfo: UserInfo,
+    private val cookieName: CookieName
+)
 {
     @GetMapping("", produces = ["application/json"])
-    fun getUserInfo(request: HttpServletRequest): Map<String, Any> {
-        requestValidator.validateServletRequest(request,
+    fun getUserInfo(request: HttpServletRequest): Map<String, Any>
+    {
+        requestValidator.validateServletRequest(
+            request,
             ValidateRequestOptions(requireCsrfHeader = false)
         )
 

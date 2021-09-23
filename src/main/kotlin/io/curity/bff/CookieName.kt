@@ -3,7 +3,8 @@ package io.curity.bff
 import org.springframework.stereotype.Service
 
 @Service
-class CookieName(private val config: BFFConfiguration) {
+class CookieName(private val config: BFFConfiguration)
+{
     val tempLoginData = "${config.cookieNamePrefix}-login"
     final val auth = "${config.cookieNamePrefix}-auth"
     final val accessToken = "${config.cookieNamePrefix}-at"

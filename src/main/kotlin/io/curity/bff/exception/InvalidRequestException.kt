@@ -1,9 +1,12 @@
 package io.curity.bff.exception
 
-class InvalidRequestException(message: String) : BFFException(
+class InvalidRequestException(message: String, cause: Throwable?, logMessage: String?) : BFFException(
     message,
-    null,
+    cause,
     401,
     "invalid_request",
-    null
+    logMessage
 )
+{
+    constructor(message: String) : this(message, null, null)
+}

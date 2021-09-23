@@ -15,6 +15,8 @@ data class BFFConfigurationProperties(
     var scope: String?,
 
     // Authorization Server Configuration
+    var issuer: String,
+    var jwksUri: String,
     var logoutEndpoint: String,
     var authorizeEndpoint: String,
     var tokenEndpoint: String,
@@ -39,7 +41,8 @@ data class CookieSerializeOptions(
 
 @Configuration
 @EnableConfigurationProperties(BFFConfigurationProperties::class)
-class BFFConfiguration(configurationProperties: BFFConfigurationProperties) {
+class BFFConfiguration(configurationProperties: BFFConfigurationProperties)
+{
     val clientID = configurationProperties.clientID
     val clientSecret = configurationProperties.clientSecret
     val redirectUri = configurationProperties.redirectUri
@@ -47,6 +50,8 @@ class BFFConfiguration(configurationProperties: BFFConfigurationProperties) {
     val scope = configurationProperties.scope
 
     // Authorization Server Configuration
+    val issuer = configurationProperties.issuer
+    val jwksUri = configurationProperties.jwksUri
     val logoutEndpoint = configurationProperties.logoutEndpoint
     val authorizeEndpoint = configurationProperties.authorizeEndpoint
     val tokenEndpoint = configurationProperties.tokenEndpoint

@@ -1,11 +1,7 @@
 package io.curity.bff
 
 import org.springframework.stereotype.Service
-import java.lang.RuntimeException
 import java.nio.charset.StandardCharsets
-import java.security.InvalidAlgorithmParameterException
-import java.security.InvalidKeyException
-import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import java.time.Duration
@@ -14,10 +10,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
-import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
-import javax.crypto.IllegalBlockSizeException
-import javax.crypto.NoSuchPaddingException
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
@@ -47,9 +40,15 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
     fun getEncryptedCookie(cookieName: String, cookieValue: String): String =
         encryptValue(cookieValue).serializeToCookie(cookieName, config.cookieSerializeOptions)
 
-    fun encryptValue(value: String): String {
+    fun encryptValue(value: String): String
+    {
         val iv = generateIv()
-        return "${String(Base64.getEncoder().encode(iv.iv.toHex()), StandardCharsets.UTF_8)}:${encrypt("AES/CBC/PKCS5Padding", value, iv)}"
+        return "${
+            String(
+                Base64.getEncoder().encode(iv.iv.toHex()),
+                StandardCharsets.UTF_8
+            )
+        }:${encrypt("AES/CBC/PKCS5Padding", value, iv)}"
 
     }
 
@@ -92,7 +91,8 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         return String(plainText)
     }
 
-    fun decryptValueFromCookie(cookieValue: String): String {
+    fun decryptValueFromCookie(cookieValue: String): String
+    {
         val valueArray = cookieValue.split(":")
 
         val iv = String(Base64.getDecoder().decode(valueArray[0]), StandardCharsets.UTF_8)
@@ -101,55 +101,64 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         return decrypt("AES/CBC/PKCS5Padding", cipherText, key, IvParameterSpec(iv.decodeHex()))
     }
 
-    fun String.decodeHex(): ByteArray {
+    fun String.decodeHex(): ByteArray
+    {
         return ByteArray(length / 2) { current ->
             Integer.parseInt(this, current * 2, (current + 1) * 2, 16).toByte()
         }
     }
 
-    fun String.serializeToCookie(name: String, options: CookieSerializeOptions): String {
+    fun String.serializeToCookie(name: String, options: CookieSerializeOptions): String
+    {
         val builder = StringBuilder()
         builder.append(name).append('=')
         builder.append(this)
 
         builder.append("; Domain=").append(options.domain)
         builder.append("; Path=").append(options.path)
-        if (options.secure) {
+        if (options.secure)
+        {
             builder.append("; Secure")
         }
 
         builder.append("; HttpOnly")
 
-        if (options.sameSite) {
+        if (options.sameSite)
+        {
             builder.append("; SameSite=true")
         }
 
         val expiresInSeconds = options.expiresInSeconds
         if (expiresInSeconds != null)
         {
-            if (expiresInSeconds > -1) {
+            if (expiresInSeconds > -1)
+            {
                 builder.append("; Max-Age=").append(options.expiresInSeconds)
             }
 
             val expires =
-                if (expiresInSeconds != 0) ZonedDateTime.now().plusSeconds(expiresInSeconds.toLong()) else Instant.EPOCH.atZone(ZoneOffset.UTC)
+                if (expiresInSeconds != 0) ZonedDateTime.now()
+                    .plusSeconds(expiresInSeconds.toLong()) else Instant.EPOCH.atZone(ZoneOffset.UTC)
             builder.append("; Expires=").append(expires.format(DateTimeFormatter.RFC_1123_DATE_TIME))
         }
 
         return builder.toString()
     }
 
-    fun getCookieForUnset(cookieName: String): String {
+    fun getCookieForUnset(cookieName: String): String
+    {
         val options = config.cookieSerializeOptions.copy(expiresInSeconds = minusDayInSeconds)
         return "".serializeToCookie(cookieName, options)
     }
 
-    fun getCookiesForUnset(): List<String> {
+    fun getCookiesForUnset(): List<String>
+    {
         val options = config.cookieSerializeOptions.copy(expiresInSeconds = minusDayInSeconds)
         return cookieName.cookiesForUnset.map { "".serializeToCookie(it, options) }
     }
 
-    companion object {
+    companion object
+    {
         private val minusDayInSeconds = -Duration.ofDays(1).toSeconds().toInt()
     }
 }

@@ -6,7 +6,11 @@ import org.springframework.web.util.WebUtils
 import javax.servlet.http.HttpServletRequest
 
 @Service
-class RequestValidator(private val cookieEncrypter: CookieEncrypter, private val config: BFFConfiguration, private val cookieName: CookieName)
+class RequestValidator(
+    private val cookieEncrypter: CookieEncrypter,
+    private val config: BFFConfiguration,
+    private val cookieName: CookieName
+)
 {
     fun validateServletRequest(request: HttpServletRequest, options: ValidateRequestOptions)
     {
@@ -18,13 +22,21 @@ class RequestValidator(private val cookieEncrypter: CookieEncrypter, private val
         )
     }
 
-    private fun validateRequest(csrfHeader: String?, csrfCookie: String?, origin: String?, options: ValidateRequestOptions) {
+    private fun validateRequest(
+        csrfHeader: String?,
+        csrfCookie: String?,
+        origin: String?,
+        options: ValidateRequestOptions
+    )
+    {
 
-        if (options.requireTrustedOrigin) {
+        if (options.requireTrustedOrigin)
+        {
             validateOrigin(origin)
         }
 
-        if (options.requireCsrfHeader) {
+        if (options.requireCsrfHeader)
+        {
             validateCSRFToken(csrfCookie, csrfHeader)
         }
     }

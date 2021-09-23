@@ -17,11 +17,17 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/\${bff.bffEndpointsPrefix}/refresh")
-class RefreshTokenController(private val requestValidator: RequestValidator, private val cookieEncrypter: CookieEncrypter, private val cookieName: CookieName, private val authorizationServerClient: AuthorizationServerClient)
+class RefreshTokenController(
+    private val requestValidator: RequestValidator,
+    private val cookieEncrypter: CookieEncrypter,
+    private val cookieName: CookieName,
+    private val authorizationServerClient: AuthorizationServerClient
+)
 {
     @PostMapping("", produces = ["application/json"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun refreshTokenFromCookie(request: HttpServletRequest, response: HttpServletResponse) {
+    fun refreshTokenFromCookie(request: HttpServletRequest, response: HttpServletResponse)
+    {
         requestValidator.validateServletRequest(request, ValidateRequestOptions())
 
         val refreshTokenCookie = WebUtils.getCookie(request, cookieName.auth)?.value
