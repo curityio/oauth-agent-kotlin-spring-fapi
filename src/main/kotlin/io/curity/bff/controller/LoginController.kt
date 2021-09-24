@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse
 @CrossOrigin
 @RequestMapping("/\${bff.bffEndpointsPrefix}/login")
 class LoginController(
-    private val config: BFFConfiguration,
     private val cookieName: CookieName,
     private val cookieEncrypter: CookieEncrypter,
     private val authorizationServerClient: AuthorizationServerClient,

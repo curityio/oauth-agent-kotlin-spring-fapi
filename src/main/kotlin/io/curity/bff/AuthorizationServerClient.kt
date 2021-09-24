@@ -50,13 +50,8 @@ class AuthorizationServerClient(
             throw InvalidStateException()
         }
 
-        // @TODO: mutual TLS
         return client.post()
             .uri(config.tokenEndpoint)
-            .header(
-                "Authorization",
-                "Basic ${String(Base64.getEncoder().encode("${config.clientID}:${config.clientSecret}".toByteArray()))}"
-            )
             .header("Content-Type", "application/x-www-form-urlencoded")
             .bodyValue("grant_type=authorization_code&redirect_uri=${config.redirectUri}&code=${code}&code_verifier=${loginData.codeVerifier}")
             .exchangeToMono { response -> handleAuthorizationServerResponse(response, "Authorization Code Grant") }
@@ -86,13 +81,8 @@ class AuthorizationServerClient(
 
     fun refreshAccessToken(refreshToken: String): TokenResponse
     {
-        // @TODO: mutual TLS
         return client.post()
             .uri(config.tokenEndpoint)
-            .header(
-                "Authorization",
-                "Basic ${String(Base64.getEncoder().encode("${config.clientID}:${config.clientSecret}".toByteArray()))}"
-            )
             .header("Content-Type", "application/x-www-form-urlencoded")
             .bodyValue("grant_type=refresh_token&refresh_token=$refreshToken")
             .exchangeToMono { response -> handleAuthorizationServerResponse(response, "Refresh Token Grant") }
@@ -149,14 +139,9 @@ class AuthorizationServerClient(
             body += "&scope=${config.scope}"
         }
 
-        // TODO - use mTLS
         val parResponse = client.post()
             .uri(config.authorizeEndpoint + "/par")
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .header(
-                "Authorization",
-                "Basic ${String(Base64.getEncoder().encode("${config.clientID}:${config.clientSecret}".toByteArray()))}"
-            )
             .bodyValue(body)
             .exchangeToMono { response -> handleAuthorizationServerResponse(response, "PAR") }
             .map { objectMapper.readValue(it, PARResponse::class.java) }

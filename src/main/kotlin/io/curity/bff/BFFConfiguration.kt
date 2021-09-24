@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration
 @ConstructorBinding
 data class BFFConfigurationProperties(
     var clientID: String = "",
-    var clientSecret: String = "",
     var redirectUri: String,
     var postLogoutRedirectURI: String?,
     var scope: String?,
@@ -44,7 +43,6 @@ data class CookieSerializeOptions(
 class BFFConfiguration(configurationProperties: BFFConfigurationProperties)
 {
     val clientID = configurationProperties.clientID
-    val clientSecret = configurationProperties.clientSecret
     val redirectUri = configurationProperties.redirectUri
     val postLogoutRedirectURI = configurationProperties.postLogoutRedirectURI
     val scope = configurationProperties.scope

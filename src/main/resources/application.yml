@@ -1,6 +1,5 @@
 bff:
   clientID: 'spa-client'
-  clientSecret: 'Password1'
   redirectUri: 'http://www.example.com/'
   postLogoutRedirectURI: 'http://www.example.com/'
   scope: 'openid profile'
@@ -22,4 +21,8 @@ bff:
   authorizeEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-authorize'
   logoutEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-session/logout'
   tokenEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-token'
-
+  ssl:
+    key-store: bff-kotlin-client.p12
+    key-store-password: Secr3t
+    trust-store: idsvr.p12
+    trust-store-password: Secr3t
