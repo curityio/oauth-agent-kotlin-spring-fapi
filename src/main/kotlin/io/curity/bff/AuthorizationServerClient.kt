@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import java.util.Base64
 
 @Service
 class AuthorizationServerClient(
@@ -53,7 +52,7 @@ class AuthorizationServerClient(
         return client.post()
             .uri(config.tokenEndpoint)
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .bodyValue("grant_type=authorization_code&redirect_uri=${config.redirectUri}&code=${code}&code_verifier=${loginData.codeVerifier}")
+            .bodyValue("client_id=${config.clientID}&grant_type=authorization_code&redirect_uri=${config.redirectUri}&code=${code}&code_verifier=${loginData.codeVerifier}")
             .exchangeToMono { response -> handleAuthorizationServerResponse(response, "Authorization Code Grant") }
             .map { objectMapper.readValue(it, TokenResponse::class.java) }
             .block()
