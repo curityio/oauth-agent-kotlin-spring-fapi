@@ -78,7 +78,7 @@ class AuthorizationServerClient(
         return response.bodyToMono(String::class.java)
     }
 
-    fun refreshAccessToken(refreshToken: String): TokenResponse
+    suspend fun refreshAccessToken(refreshToken: String): TokenResponse
     {
         return client.post()
             .uri(config.tokenEndpoint)

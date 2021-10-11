@@ -2,7 +2,6 @@ package io.curity.bff.controller
 
 import io.curity.bff.AuthorizationRequestData
 import io.curity.bff.AuthorizationServerClient
-import io.curity.bff.BFFConfiguration
 import io.curity.bff.CookieEncrypter
 import io.curity.bff.CookieName
 import io.curity.bff.RequestValidator
@@ -11,15 +10,14 @@ import io.curity.bff.exception.InvalidResponseJwtException
 import io.curity.bff.generateRandomString
 import org.jose4j.jwt.consumer.InvalidJwtException
 import org.jose4j.jwt.consumer.JwtConsumer
+import org.springframework.http.server.ServerHttpResponse
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.util.UriComponentsBuilder
-import org.springframework.web.util.WebUtils
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 
 @RestController
@@ -34,7 +32,7 @@ class LoginController(
 )
 {
     @PostMapping("/start")
-    fun startLogin(request: HttpServletRequest, response: HttpServletResponse): StartAuthorizationResponse
+    suspend fun startLogin(request: ServerHttpRequest, response: ServerHttpResponse): StartAuthorizationResponse
     {
 
         requestValidator.validateServletRequest(
@@ -47,7 +45,7 @@ class LoginController(
         val encryptedCookieValue =
             cookieEncrypter.getEncryptedCookie(cookieName.tempLoginData, authorizationRequestData.toJSONString())
 
-        response.addHeader("Set-Cookie", encryptedCookieValue)
+        response.headers["Set-Cookie"] = encryptedCookieValue
 
         return StartAuthorizationResponse(authorizationRequestData.authorizationRequestUrl!!)
     }

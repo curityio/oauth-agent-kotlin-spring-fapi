@@ -34,13 +34,13 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         )
     }
 
-    fun getEncryptedCookie(cookieName: String, cookieValue: String, cookieOptions: CookieSerializeOptions) =
+    suspend fun getEncryptedCookie(cookieName: String, cookieValue: String, cookieOptions: CookieSerializeOptions) =
         encryptValue(cookieValue).serializeToCookie(cookieName, cookieOptions)
 
-    fun getEncryptedCookie(cookieName: String, cookieValue: String): String =
+    suspend fun getEncryptedCookie(cookieName: String, cookieValue: String): String =
         encryptValue(cookieValue).serializeToCookie(cookieName, config.cookieSerializeOptions)
 
-    fun encryptValue(value: String): String
+    suspend fun encryptValue(value: String): String
     {
         val iv = generateIv()
         return "${
