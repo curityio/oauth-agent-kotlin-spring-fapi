@@ -7,12 +7,12 @@ import io.curity.bff.RequestValidator
 import io.curity.bff.ValidateRequestOptions
 import io.curity.bff.encodeURI
 import io.curity.bff.exception.InvalidBFFCookieException
+import org.springframework.http.HttpHeaders.SET_COOKIE
+import org.springframework.http.server.reactive.ServerHttpRequest
+import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.util.WebUtils
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/\${bff.bffEndpointsPrefix}/logout")
@@ -24,15 +24,13 @@ class LogoutController(
 )
 {
     @PostMapping("", produces = ["application/json"])
-    fun logoutUser(request: HttpServletRequest, response: HttpServletResponse): LogoutUserResponse
+    suspend fun logoutUser(request: ServerHttpRequest, response: ServerHttpResponse): LogoutUserResponse
     {
         requestValidator.validateServletRequest(request, ValidateRequestOptions())
 
-        if (WebUtils.getCookie(request, cookieName.accessToken) != null)
+        if (request.cookies[cookieName.accessToken]?.isNotEmpty() == true)
         {
-            cookieEncrypter.getCookiesForUnset().forEach {
-                response.addHeader("Set-Cookie", it)
-            }
+            response.headers[SET_COOKIE] = cookieEncrypter.getCookiesForUnset()
 
             return LogoutUserResponse(getLogoutUrl())
         } else

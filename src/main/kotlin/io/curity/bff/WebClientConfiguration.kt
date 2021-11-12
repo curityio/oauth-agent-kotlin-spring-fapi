@@ -15,13 +15,17 @@ import javax.net.ssl.TrustManagerFactory
 
 
 @Configuration
-class WebClientConfiguration()
+class WebClientConfiguration
 {
-    @Value("\${bff.ssl.key-store}") lateinit var sslKeyStore: String
-    @Value("\${bff.ssl.key-store-password}") lateinit var sslKeystorePassword: String
+    @Value("\${bff.ssl.key-store}")
+    lateinit var sslKeyStore: String
+    @Value("\${bff.ssl.key-store-password}")
+    lateinit var sslKeystorePassword: String
 
-    @Value("\${bff.ssl.trust-store}") lateinit var sslTrustStore: String
-    @Value("\${bff.ssl.trust-store-password}") lateinit var sslTruststorePassword: String
+    @Value("\${bff.ssl.trust-store}")
+    lateinit var sslTrustStore: String
+    @Value("\${bff.ssl.trust-store-password}")
+    lateinit var sslTruststorePassword: String
 
     @Bean
     fun webClient(): WebClient?

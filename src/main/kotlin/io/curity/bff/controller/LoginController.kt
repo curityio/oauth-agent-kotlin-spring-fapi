@@ -10,7 +10,8 @@ import io.curity.bff.exception.InvalidResponseJwtException
 import io.curity.bff.generateRandomString
 import org.jose4j.jwt.consumer.InvalidJwtException
 import org.jose4j.jwt.consumer.JwtConsumer
-import org.springframework.http.server.ServerHttpResponse
+import org.springframework.http.HttpHeaders.SET_COOKIE
+import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
@@ -45,15 +46,15 @@ class LoginController(
         val encryptedCookieValue =
             cookieEncrypter.getEncryptedCookie(cookieName.tempLoginData, authorizationRequestData.toJSONString())
 
-        response.headers["Set-Cookie"] = encryptedCookieValue
+        response.headers[SET_COOKIE] = encryptedCookieValue
 
         return StartAuthorizationResponse(authorizationRequestData.authorizationRequestUrl!!)
     }
 
     @PostMapping("/end", consumes = ["application/json"])
-    fun handlePageLoad(
-        request: HttpServletRequest,
-        response: HttpServletResponse,
+    suspend fun handlePageLoad(
+        request: ServerHttpRequest,
+        response: ServerHttpResponse,
         @RequestBody body: EndAuthorizationRequest
     ): EndAuthorizationResponse
     {
@@ -86,9 +87,7 @@ class LoginController(
 
             // Write the SameSite cookies
             val cookiesToSet = authorizationServerClient.getCookiesForTokenResponse(tokenResponse, true, csrfToken)
-            cookiesToSet.forEach {
-                response.addHeader("Set-Cookie", it)
-            }
+            response.headers[SET_COOKIE] = cookiesToSet
 
             isLoggedIn = true
         } else
@@ -111,7 +110,7 @@ class LoginController(
         )
     }
 
-    private fun getAuthorizationURL(): AuthorizationRequestData
+    private suspend fun getAuthorizationURL(): AuthorizationRequestData
     {
         val codeVerifier = generateRandomString()
         val state = generateRandomString()
@@ -152,8 +151,8 @@ class LoginController(
         }
     }
 
-    fun HttpServletRequest.getCookie(cookieName: String): String? =
-        WebUtils.getCookie(this, cookieName)?.value
+    private fun ServerHttpRequest.getCookie(cookieName: String): String? =
+        this.cookies[cookieName]?.first()?.value
 }
 
 data class OAuthQueryParams(val code: String?, val state: String?)

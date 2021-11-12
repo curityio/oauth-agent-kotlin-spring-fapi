@@ -6,14 +6,14 @@ import io.curity.bff.CookieName
 import io.curity.bff.RequestValidator
 import io.curity.bff.ValidateRequestOptions
 import io.curity.bff.exception.InvalidBFFCookieException
+import org.springframework.http.HttpHeaders.SET_COOKIE
 import org.springframework.http.HttpStatus
+import org.springframework.http.server.reactive.ServerHttpRequest
+import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.util.WebUtils
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/\${bff.bffEndpointsPrefix}/refresh")
@@ -26,19 +26,17 @@ class RefreshTokenController(
 {
     @PostMapping("", produces = ["application/json"])
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun refreshTokenFromCookie(request: HttpServletRequest, response: HttpServletResponse)
+    suspend fun refreshTokenFromCookie(request: ServerHttpRequest, response: ServerHttpResponse)
     {
         requestValidator.validateServletRequest(request, ValidateRequestOptions())
 
-        val refreshTokenCookie = WebUtils.getCookie(request, cookieName.auth)?.value
+        val refreshTokenCookie = request.cookies[cookieName.auth]?.first()?.value
             ?: throw InvalidBFFCookieException("No auth cookie was supplied in a token refresh call")
 
         val decryptedToken = cookieEncrypter.decryptValueFromCookie(refreshTokenCookie)
         val tokenResponse = authorizationServerClient.refreshAccessToken(decryptedToken)
         val cookiesToSet = authorizationServerClient.getCookiesForTokenResponse(tokenResponse, false, null)
 
-        cookiesToSet.forEach {
-            response.addHeader("Set-Cookie", it)
-        }
+        response.headers[SET_COOKIE] = cookiesToSet
     }
 }

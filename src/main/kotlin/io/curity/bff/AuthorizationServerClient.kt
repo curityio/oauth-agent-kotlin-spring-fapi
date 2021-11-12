@@ -7,10 +7,14 @@ import io.curity.bff.exception.InvalidRequestException
 import io.curity.bff.exception.InvalidStateException
 import io.curity.bff.exception.MissingTempLoginDataException
 import io.curity.bff.exception.UnauthorizedException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Mono
+import org.springframework.web.reactive.function.client.WebClientRequestException
+import org.springframework.web.reactive.function.client.awaitBody
+import org.springframework.web.reactive.function.client.awaitExchange
 
 @Service
 class AuthorizationServerClient(
@@ -21,76 +25,80 @@ class AuthorizationServerClient(
     private val cookieName: CookieName
 )
 {
-    private val idTokenOptions = config.cookieSerializeOptions.copy(path = "${config.bffEndpointsPrefix}/userInfo")
-    private val refreshTokenOptions = config.cookieSerializeOptions.copy(path = "${config.bffEndpointsPrefix}/refresh")
+    private val idTokenOptions = config.cookieSerializeOptions.copy(path = "/${config.bffEndpointsPrefix}/userInfo")
+    private val refreshTokenOptions = config.cookieSerializeOptions.copy(path = "/${config.bffEndpointsPrefix}/refresh")
 
-    fun getTokens(tempLoginData: String?, code: String, state: String): TokenResponse
+    suspend fun getTokens(tempLoginData: String?, code: String, state: String): TokenResponse
     {
         if (tempLoginData == null)
         {
             throw MissingTempLoginDataException()
         }
 
-        val loginData: AuthorizationRequestData?
+        val loginData = withContext(Dispatchers.Default) {
+            val result = kotlin.runCatching {
+                return@runCatching objectMapper.readValue(
+                    cookieEncrypter.decryptValueFromCookie(tempLoginData),
+                    AuthorizationRequestData::class.java
+                )
+            }
 
-        try
-        {
-            loginData = objectMapper.readValue(
-                cookieEncrypter.decryptValueFromCookie(tempLoginData),
-                AuthorizationRequestData::class.java
-            )
-        } catch (exception: RuntimeException)
-        {
-            throw InvalidRequestException("Cookie value can't be decrypted or deserialized")
+            result.getOrNull() ?: throw InvalidRequestException("Cookie value can't be decrypted or deserialized")
         }
 
-        if (loginData != null && loginData.state != state)
+        if (loginData.state != state)
         {
             throw InvalidStateException()
         }
 
-        return client.post()
-            .uri(config.tokenEndpoint)
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .bodyValue("client_id=${config.clientID}&grant_type=authorization_code&redirect_uri=${config.redirectUri}&code=${code}&code_verifier=${loginData.codeVerifier}")
-            .exchangeToMono { response -> handleAuthorizationServerResponse(response, "Authorization Code Grant") }
-            .map { objectMapper.readValue(it, TokenResponse::class.java) }
-            .block()
-            ?: throw AuthorizationServerException("Connectivity problem during an Authorization Code Grant")
+        try
+        {
+            return client.post()
+                .uri(config.tokenEndpoint)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .bodyValue("client_id=${config.clientID}&grant_type=authorization_code&redirect_uri=${config.redirectUri}&code=${code}&code_verifier=${loginData.codeVerifier}")
+                .awaitExchange { response -> handleAuthorizationServerResponse(response, "Authorization Code Grant") }
+        } catch (exception: WebClientRequestException)
+        {
+            throw AuthorizationServerException("Connectivity problem during an Authorization Code Grant", exception)
+        }
     }
 
-    private fun handleAuthorizationServerResponse(response: ClientResponse, grant: String): Mono<String>
+    private suspend inline fun <reified T : Any> handleAuthorizationServerResponse(
+        response: ClientResponse,
+        grant: String
+    ): T
     {
         if (response.statusCode().is5xxServerError)
         {
-            return response.createException().map { exception ->
-                throw AuthorizationServerException("Server error response in $grant: ${exception.responseBodyAsString}")
-            }
+            throw AuthorizationServerException("Server error response in $grant: ${response.awaitBody<String>()}")
         }
 
         if (response.statusCode().is4xxClientError)
         {
-            return response.createException().map { exception ->
-                throw UnauthorizedException("$grant request was rejected: ${exception.responseBodyAsString}")
-            }
+            throw UnauthorizedException("$grant request was rejected: ${response.awaitBody<String>()}")
         }
 
-        return response.bodyToMono(String::class.java)
+        return response.awaitBody()
     }
 
     suspend fun refreshAccessToken(refreshToken: String): TokenResponse
     {
-        return client.post()
-            .uri(config.tokenEndpoint)
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .bodyValue("grant_type=refresh_token&refresh_token=$refreshToken")
-            .exchangeToMono { response -> handleAuthorizationServerResponse(response, "Refresh Token Grant") }
-            .map { objectMapper.readValue(it, TokenResponse::class.java) }
-            .block()
-            ?: throw AuthorizationServerException("Connectivity problem during an Refresh Token Grant")
+        try
+        {
+            return client.post()
+                .uri(config.tokenEndpoint)
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .bodyValue("grant_type=refresh_token&refresh_token=$refreshToken&client_id=${config.clientID}")
+                .awaitExchange { response -> handleAuthorizationServerResponse(response, "Refresh Token Grant") }
+
+        } catch (exception: WebClientRequestException)
+        {
+            throw AuthorizationServerException("Connectivity problem during a Refresh Token Grant", exception)
+        }
     }
 
-    fun getCookiesForTokenResponse(
+    suspend fun getCookiesForTokenResponse(
         response: TokenResponse,
         unsetTempLoginDataCookie: Boolean,
         csrfCookieValue: String?
@@ -128,7 +136,7 @@ class AuthorizationServerClient(
         return cookiesList
     }
 
-    fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String): String
+    suspend fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String): String
     {
         var body =
             "client_id=${config.clientID}&state=${state}&response_mode=jwt&response_type=code&redirect_uri=${config.redirectUri}&code_challenge=${codeVerifier.hash()}&code_challenge_method=S256"
@@ -138,16 +146,19 @@ class AuthorizationServerClient(
             body += "&scope=${config.scope}"
         }
 
-        val parResponse = client.post()
-            .uri(config.authorizeEndpoint + "/par")
-            .header("Content-Type", "application/x-www-form-urlencoded")
-            .bodyValue(body)
-            .exchangeToMono { response -> handleAuthorizationServerResponse(response, "PAR") }
-            .map { objectMapper.readValue(it, PARResponse::class.java) }
-            .block()
-            ?: throw AuthorizationServerException("Connectivity problem during PAR request")
+        try
+        {
+            val parResponse = client.post()
+                .uri(config.authorizeEndpoint + "/par")
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .bodyValue(body)
+                .awaitExchange { response -> handleAuthorizationServerResponse<PARResponse>(response, "PAR") }
 
-        return "${config.authorizeEndpoint}?client_id=${config.clientID}&request_uri=${parResponse.requestUri}"
+            return "${config.authorizeEndpoint}?client_id=${config.clientID}&request_uri=${parResponse.requestUri}"
+        } catch (exception: WebClientRequestException)
+        {
+            throw AuthorizationServerException("Exception encountered when calling authorization server", exception)
+        }
     }
 }
 

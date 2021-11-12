@@ -1,9 +1,8 @@
 package io.curity.bff
 
 import io.curity.bff.exception.UnauthorizedException
+import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.stereotype.Service
-import org.springframework.web.util.WebUtils
-import javax.servlet.http.HttpServletRequest
 
 @Service
 class RequestValidator(
@@ -12,17 +11,17 @@ class RequestValidator(
     private val cookieName: CookieName
 )
 {
-    fun validateServletRequest(request: HttpServletRequest, options: ValidateRequestOptions)
+    suspend fun validateServletRequest(request: ServerHttpRequest, options: ValidateRequestOptions)
     {
         validateRequest(
-            request.getHeader("X-${config.cookieNamePrefix}-csrf"),
-            WebUtils.getCookie(request, cookieName.csrf)?.value,
-            request.getHeader("Origin"),
+            request.headers["X-${config.cookieNamePrefix}-csrf"]?.first(),
+            request.cookies[cookieName.csrf]?.first()?.value,
+            request.headers["Origin"]?.first(),
             options
         )
     }
 
-    private fun validateRequest(
+    private suspend fun validateRequest(
         csrfHeader: String?,
         csrfCookie: String?,
         origin: String?,
@@ -41,7 +40,7 @@ class RequestValidator(
         }
     }
 
-    private fun validateCSRFToken(csrfCookie: String?, csrfHeader: String?)
+    private suspend fun validateCSRFToken(csrfCookie: String?, csrfHeader: String?)
     {
         if (csrfCookie == null)
         {
