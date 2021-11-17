@@ -119,9 +119,3 @@ echo '*** Successfully exported root CA to a PKCS#12 file'
 #
 rm example.srl
 rm example.local.csr
-
-#
-# Copy files to the resources folder
-#
-cp example.local.p12 ../src/main/resources/
-cp example.ca.p12    ../src/main/resources/

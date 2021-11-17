@@ -2,4 +2,5 @@ build/
 .gradle/
 .idea/
 .DS_Store
-src/main/resources/*.p12
+certs/example*
+test/data

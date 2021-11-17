@@ -1,1 +1,1 @@
-subjectAltName=DNS:tokenhandler.example.local,DNS:login.example.local
+subjectAltName=DNS:api.example.local,DNS:login.example.local
