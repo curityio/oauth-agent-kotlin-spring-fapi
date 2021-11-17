@@ -33,6 +33,15 @@ cd certs
 ./create-certs.sh
 ```
 
+## Configure Java SSL Trust
+
+Run a command of the following form from the root folder
+
+```bash
+sudo keytool -delete -alias example.local -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -noprompt
+sudo keytool -import -alias example.local -keystore "$JAVA_HOME/lib/security/cacerts" -file ./certs/example.ca.pem -storepass changeit -noprompt
+```
+
 ## Build and Run the Token Handler API
 
 Run this from the root folder and the API will listen on SSL over port 8080: 
@@ -45,8 +54,9 @@ Test that the API is contactable using this command from the root folder.\
 This will result in an unauthorized request initially
 
 ```bash
-curl --cacert ./certs/example.ca.pem -i -X POST https://api.example.local:8080/tokenhandler/login/start \
--H "origin: https://www.example.local"
+curl --cacert ../certs/example.ca.pem -i -X POST https://api.example.local:8080/tokenhandler/login/start \
+-H "origin: https://www.example.local" \
+-d {}
 ```
 
 ## Test the Token Handler API

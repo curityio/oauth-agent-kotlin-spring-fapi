@@ -15,7 +15,7 @@ bff:
     domain: 'api.example.local'
     path: '/'
 
-  trustedWebOrigins: [ 'http://www.example.local' ]
+  trustedWebOrigins: [ 'https://www.example.local' ]
   issuer: 'https://login.example.local:8443/oauth/v2/oauth-anonymous'
   jwksUri: 'https://login.example.local:8443/oauth/v2/oauth-anonymous/jwks'
   authorizeEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-authorize'
@@ -28,7 +28,9 @@ bff:
     trust-store: ./certs/example.ca.p12
     trust-store-password: Password1
 
+
 server:
+  port: 8080
   ssl:
     key-store: ./certs/example.local.p12
     key-store-password: 'Password1'

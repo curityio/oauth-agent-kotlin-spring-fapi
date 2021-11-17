@@ -56,6 +56,7 @@ class RequestValidator(
 
     private fun validateOrigin(origin: String?)
     {
+        println("*** validate origin")
         if (origin == null || !config.trustedWebOrigins.contains(origin))
         {
             throw UnauthorizedException("The call is from an untrusted web origin: $origin")

@@ -39,7 +39,7 @@ function getHtmlFormValue(){
 #
 # Temp data is stored in this folder
 #
-mkdir -p tmp
+mkdir -p data
 
 #
 # First get the authorization request URL

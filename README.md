@@ -46,7 +46,7 @@ This endpoint should be be called by the SPA on any page load. The SPA sends the
 
 ```http
 POST https://th.example.com/login/end
-pageUrl=http://www.example.com?response=eyJ...
+pageUrl=https://www.example.com?response=eyJ...
 ```
 
 The response will contain a few `Set-Cookie` headers.

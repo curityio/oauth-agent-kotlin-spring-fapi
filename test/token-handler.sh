@@ -7,12 +7,11 @@
 BFF_API_BASE_URL='https://api.example.local:8080/tokenhandler'
 WEB_BASE_URL='https://www.example.local'
 AUTHORIZATION_SERVER_BASE_URL='https://login.example.local:8443'
-CA_FILE_PATH='../certs/example.ca.pem'
 RESPONSE_FILE=data/response.txt
 MAIN_COOKIES_FILE=data/main_cookies.txt
 LOGIN_COOKIES_FILE=data/login_cookies.txt
 CURITY_COOKIES_FILE=data/curity_cookies.txt
-#export http_proxy='http://127.0.0.1:8888'
+#export https_proxy='http://127.0.0.1:8888'
 
 #
 # Get a header value from the HTTP response file
@@ -27,15 +26,15 @@ function getHeaderValue(){
 #
 # Temp data is stored in this folder
 #
-mkdir -p tmp
+mkdir -p data
 
 #
 # Test sending an invalid web origin to the BFF API in an OPTIONS request
 # The logic around CORS is configured, not coded, so ensure that it works as expected
 #
 echo '1. Testing OPTIONS request with an invalid web origin ...'
-HTTP_STATUS=$(curl --cacert $CA_FILE_PATH -i -s -X OPTIONS "$BFF_API_BASE_URL/login/start" \
--H "origin: http://malicious-site.com" \
+HTTP_STATUS=$(curl -k -i -s -X OPTIONS "$BFF_API_BASE_URL/login/start" \
+-H "frigin: http://malicious-site.com" \
 -o $RESPONSE_FILE -w '%{http_code}')
 if [ "$HTTP_STATUS" == '000' ]; then
   echo '*** Connectivity problem encountered, please check endpoints and whether an HTTP proxy tool is running'
@@ -47,13 +46,12 @@ if [ "$ORIGIN" != '' ]; then
   exit
 fi
 echo '1. OPTIONS with invalid web origin was not granted access'
-exit
 
 #
 # Test sending a valid web origin to the BFF API in an OPTIONS request
 #
 echo '2. Testing OPTIONS request with a valid web origin ...'
-HTTP_STATUS=$(curl -i -s -X OPTIONS "$BFF_API_BASE_URL/login/start" \
+HTTP_STATUS=$(curl -k -i -s -X OPTIONS "$BFF_API_BASE_URL/login/start" \
 -H "origin: $WEB_BASE_URL" \
 -o $RESPONSE_FILE -w '%{http_code}')
 if [ "$HTTP_STATUS" != '200'  ] && [ "$HTTP_STATUS" != '204' ]; then
@@ -72,22 +70,15 @@ echo '2. OPTIONS with valid web origin granted access successfully'
 # The logic around trusted origins is coded by us
 #
 echo '3. Testing end login POST with invalid web origin ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/end" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: http://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -d '{"pageUrl":"'$WEB_BASE_URL'"}' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '401' ]; then
+if [ "$HTTP_STATUS" != '403' ]; then
   echo '*** End login did not fail as expected'
   exit
-fi
-JSON=$(tail -n 1 $RESPONSE_FILE) 
-echo $JSON | jq
-CODE=$(jq -r .code <<< "$JSON")
-if [ "$CODE" != 'unauthorized_request' ]; then
-   echo "*** End login returned an unexpected error code"
-   exit
 fi
 echo '3. POST to endLogin with an invalid web origin was successfully rejected'
 
@@ -95,7 +86,7 @@ echo '3. POST to endLogin with an invalid web origin was successfully rejected'
 # Test sending an end login request to the API as part of an unauthenticated page load
 #
 echo '4. Testing end login POST for an unauthenticated page load ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/end" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -120,21 +111,14 @@ echo '4. POST to endLogin for an unauthenticated page load completed successfull
 # The logic around trusted origins is coded by us
 #
 echo '5. Testing POST to start login from invalid web origin ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/start" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/start" \
 -H "origin: http://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '401' ]; then
+if [ "$HTTP_STATUS" != '403' ]; then
   echo '*** Start Login with an invalid web origin did not fail as expected'
   exit
-fi
-JSON=$(tail -n 1 $RESPONSE_FILE)
-echo $JSON | jq
-CODE=$(jq -r .code <<< "$JSON")
-if [ "$CODE" != 'unauthorized_request' ]; then
-   echo "*** Start login returned an unexpected error code"
-   exit
 fi
 echo '5. POST to startLogin with invalid web origin was not granted access'
 
@@ -142,7 +126,7 @@ echo '5. POST to startLogin with invalid web origin was not granted access'
 # Test sending a valid start login request to the API
 #
 echo '6. Testing POST to start login ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/start" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/start" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -172,7 +156,7 @@ fi
 echo '8. Testing posting a malicious code and state into the browser ...'
 APP_URL='http://www.example.com?code=hi0f1340y843thy3480&state=nu2febouwefbjfewbj'
 PAGE_URL_JSON='{"pageUrl":"'$APP_URL'"}'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/end" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -196,7 +180,7 @@ echo '8. Posting a malicious code and state into the browser was handled correct
 # Test an authenticated page load by sending up the main cookies
 #
 echo '9. Testing an authenticated page load ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/end" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -222,7 +206,7 @@ echo '9. Authenticated page reload was successful'
 # Test getting user info with an invalid origin
 #
 echo '10. Testing GET User Info from an untrusted origin ...'
-HTTP_STATUS=$(curl -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
+HTTP_STATUS=$(curl -k -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
 -H "origin: http://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -244,7 +228,7 @@ echo '10. GET User Info request for an untrusted origin was handled correctly'
 # Test getting user info without a cookie
 #
 echo '11. Testing GET User Info without secure cookies ...'
-HTTP_STATUS=$(curl -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
+HTTP_STATUS=$(curl -k -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -266,7 +250,7 @@ echo '11. GET User Info request without secure cookies was handled correctly'
 # Test getting user info successfully
 #
 echo '12. Testing GET User Info with secure cookies ...'
-HTTP_STATUS=$(curl -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
+HTTP_STATUS=$(curl -k -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -284,7 +268,7 @@ echo "12. GET User Info was successful"
 # Test refreshing a token with an invalid origin
 #
 echo '13. Testing POST to /refresh from an untrusted origin ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/refresh" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
 -H "origin: http://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -306,7 +290,7 @@ echo '13. POST to /refresh for an untrusted origin was handled correctly'
 # Test refreshing a token without a cookie
 #
 echo '14. Testing POST to /refresh without secure cookies ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/refresh" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -328,7 +312,7 @@ echo '14. POST to /refresh without secure cookies was handled correctly'
 # Test refreshing a token with secure cookies but with a missing anti forgery token
 #
 echo '15. Testing POST to /refresh without CSRF token ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/refresh" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -351,7 +335,7 @@ echo '15. POST to /refresh without CSRF token was handled correctly'
 # Test refreshing a token with secure cookies but with an incorrect anti forgery token
 #
 echo '16. Testing POST to /refresh with incorrect CSRF token ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/refresh" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -375,7 +359,7 @@ echo '16. POST to /refresh with incorrect CSRF token was handled correctly'
 # Test refreshing a token, which will rewrite up to 3 cookies
 #
 echo '17. Testing POST to /refresh with correct secure details ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/refresh" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -394,7 +378,7 @@ echo '17. POST to /refresh with correct secure details completed successfully'
 # Test refreshing a token again, to ensure that the new refresh token is used for the refresh
 #
 echo '18. Testing POST to /refresh with rotated refresh token ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/refresh" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
 -H "origin: $WEB_BASE_URL" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
@@ -414,7 +398,7 @@ echo '18. POST to /refresh with rotated refresh token completed successfully'
 # Test logging out with an invalid origin
 #
 echo '19. Testing logout POST with invalid web origin ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/logout" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/logout" \
 -H "origin: http://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -437,7 +421,7 @@ echo '19. POST to logout with an invalid web origin was successfully rejected'
 # Test logging out without a cookie
 #
 echo '20. Testing logout POST without secure cookies ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/logout" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/logout" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -460,7 +444,7 @@ echo '20. POST to logout without secure cookies was successfully rejected'
 # Test logging out without an incorrect anti forgery token
 #
 echo '21. Testing logout POST with incorrect anti forgery token ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/logout" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/logout" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -484,7 +468,7 @@ echo '21. POST to logout with incorrect anti forgery token was successfully reje
 # Test getting the logout URL and clearing cookies successfully
 #
 echo '22. Testing logout POST with correct secure details ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/logout" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/logout" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -504,7 +488,7 @@ echo $JSON | jq
 #
 echo '23. Testing following the end session redirect redirect ...'
 END_SESSION_REQUEST_URL=$(jq -r .url <<< "$JSON")
-HTTP_STATUS=$(curl -i -L -s -X GET $END_SESSION_REQUEST_URL \
+HTTP_STATUS=$(curl -k -i -L -s -X GET $END_SESSION_REQUEST_URL \
 -c $CURITY_COOKIES_FILE \
 -o $RESPONSE_FILE -w '%{http_code}')
 if [ $HTTP_STATUS != '200' ]; then
@@ -517,7 +501,7 @@ echo '23. End session redirect completed successfully'
 # Test sending malformed JSON which currently results in a 500 error
 #
 echo '24. Testing sending malformed JSON to the BFF API ...'
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/end" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
