@@ -3,7 +3,6 @@ FROM azul/zulu-openjdk-alpine:11.0.12-jre
 # Copy in resources
 WORKDIR /usr/api
 COPY build/libs/backend-for-frontend-0.0.1-SNAPSHOT.jar /usr/api/
-COPY start.sh /usr/api/
 RUN apk --no-cache add curl
 
 #RUN $JAVA_HOME/bin/keytool -import -file /opt/custom/certs/mycert.pem -alias mycert -keystore $JAVA_HOME/jre/lib/security/cacerts -trustcacerts -storepass changeit -noprompt
