@@ -8,8 +8,11 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
+import java.io.BufferedReader
 import java.io.FileInputStream
+import java.io.InputStreamReader
 import java.security.KeyStore
+import java.util.stream.Collectors
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.TrustManagerFactory
 
@@ -51,9 +54,9 @@ class WebClientConfiguration
 
     private fun createKeyStore(keyStoreLocation: String, keyStorePassword: String): KeyStore
     {
-        FileInputStream(ClassPathResource(keyStoreLocation).file).use { fis ->
+        javaClass.getResourceAsStream(keyStoreLocation).use { inputStream ->
             val ks = KeyStore.getInstance(KeyStore.getDefaultType())
-            ks.load(fis, keyStorePassword.toCharArray())
+            ks.load(inputStream, keyStorePassword.toCharArray())
             return ks
         }
     }
