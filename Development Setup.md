@@ -6,7 +6,9 @@ This page shows how to run the API in a test driven manner, when developing the 
 
 - Ensure that Java 11 or above is installed
 - Ensure that OpenSSL is installed
+- Ensure that Docker Desktop is installed
 - Ensre that the jq tool is installed
+- Ensure that you have a license file for the Curity Identity Server
 
 ## Update the Hosts File
 
@@ -35,26 +37,31 @@ cd certs
 
 ## Configure Java SSL Trust
 
-Run a command of the following form from the root folder
+Run the following command from the root folder to configure the token handler API to trust the root certificate:  
+
+```bash
+sudo keytool -import -alias example.local -keystore "$JAVA_HOME/lib/security/cacerts" -file ./certs/example.ca.pem -storepass changeit -noprompt
+```
+
+Remove trust when finished with testing or if you need to update the root certificate: 
 
 ```bash
 sudo keytool -delete -alias example.local -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -noprompt
-sudo keytool -import -alias example.local -keystore "$JAVA_HOME/lib/security/cacerts" -file ./certs/example.ca.pem -storepass changeit -noprompt
 ```
 
 ## Build and Run the Token Handler API
 
-Run this from the root folder and the API will listen on SSL over port 8080: 
+Run this command from the root folder and the API will then listen on SSL over port 8080: 
 
 ```bash
 ./gradlew bootRun
 ```
 
 Test that the API is contactable using this command from the root folder.\
-This will result in an unauthorized request initially
+This will result in an unauthorized request initially:
 
 ```bash
-curl --cacert ../certs/example.ca.pem -i -X POST https://api.example.local:8080/tokenhandler/login/start \
+curl --cacert ./certs/example.ca.pem -i -X POST https://api.example.local:8080/tokenhandler/refresh \
 -H "origin: https://www.example.local" \
 -d {}
 ```
@@ -66,5 +73,24 @@ The script will initially fail when it tries to call the Curity Identity Server:
 
 ```bash
 cd test
-./token-handler.sh
+./test-token-handler.sh
+```
+
+## Deploy the Curity Identity Server
+
+Copy a license.json file into the test/idsvr folder and then run these commands.\
+This will make the 
+
+```bash
+cd test/idsvr
+./deploy.sh
+```
+
+## Complete Testing
+
+Run the complete test workflow again to ensure that all operations are working:
+
+```bash
+cd test
+./test-token-handler.sh
 ```

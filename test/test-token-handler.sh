@@ -34,7 +34,7 @@ mkdir -p data
 #
 echo '1. Testing OPTIONS request with an invalid web origin ...'
 HTTP_STATUS=$(curl -k -i -s -X OPTIONS "$BFF_API_BASE_URL/login/start" \
--H "frigin: http://malicious-site.com" \
+-H "origin: http://malicious-site.com" \
 -o $RESPONSE_FILE -w '%{http_code}')
 if [ "$HTTP_STATUS" == '000' ]; then
   echo '*** Connectivity problem encountered, please check endpoints and whether an HTTP proxy tool is running'

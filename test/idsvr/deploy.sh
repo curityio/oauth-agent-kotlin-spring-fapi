@@ -27,7 +27,7 @@ fi
 #
 # Run Docker to deploy the Curity Identity Server
 #
-docker compose --project-name tokenhandler up --force-recreate
+docker compose --project-name tokenhandler up --detach --force-recreate --remove-orphans
 if [ $? -ne 0 ]; then
   echo "Problem encountered starting Docker components"
   exit 1

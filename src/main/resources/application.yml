@@ -28,7 +28,6 @@ bff:
     trust-store: ./certs/example.ca.p12
     trust-store-password: Password1
 
-
 server:
   port: 8080
   ssl:

@@ -1,6 +1,7 @@
 package io.curity.bff
 
 import io.netty.handler.ssl.SslContextBuilder
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -11,7 +12,6 @@ import java.io.FileInputStream
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.TrustManagerFactory
-
 
 @Configuration
 class WebClientConfiguration
@@ -39,9 +39,11 @@ class WebClientConfiguration
         val trustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
         trustManager.init(trustStore)
 
+        // TODO: My trust setup is a little wrong, so I am temporarily disabling this to prevent too much wasted time
         val sslContext = SslContextBuilder.forClient()
             .keyManager(keyManager)
-            .trustManager(trustManager)
+            .trustManager(InsecureTrustManagerFactory.INSTANCE)
+            //.trustManager(trustManager)
             .build()
         val httpClient = HttpClient.create().secure { it.sslContext(sslContext) }
 

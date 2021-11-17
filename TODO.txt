@@ -1,0 +1,5 @@
+1. Get client certificate generation working
+
+2. Fix trust issue
+
+3. Verify that end-to-end setup works

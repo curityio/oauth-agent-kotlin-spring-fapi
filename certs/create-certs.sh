@@ -107,9 +107,9 @@ echo '*** Successfully exported SSL certificate to a PKCS#12 file'
 # Java trust stores work best when also password protected, so use a P12 file for the root also
 #
 openssl pkcs12 \
-    -export \
-    -nokeys \
+    -export -inkey $TRUSTSTORE_FILE_PREFIX.key \
     -in $TRUSTSTORE_FILE_PREFIX.pem \
+    -name $TRUSTSTORE_FILE_PREFIX \
     -out $TRUSTSTORE_FILE_PREFIX.p12 \
     -passout pass:$TRUSTSTORE_PASSWORD
 echo '*** Successfully exported root CA to a PKCS#12 file'
