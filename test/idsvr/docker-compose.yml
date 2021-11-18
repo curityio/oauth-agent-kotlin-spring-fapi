@@ -29,3 +29,4 @@ services:
      - ./log4j2.xml:/opt/idsvr/etc/log4j2.xml
     environment:
       PASSWORD: 'Password1'
+      FINANCIAL_GRADE_CLIENT_CA: "${FINANCIAL_GRADE_CLIENT_CA}"

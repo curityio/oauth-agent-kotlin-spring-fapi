@@ -40,13 +40,13 @@ cd certs
 Run the following command from the root folder to configure the token handler API to trust the root certificate:  
 
 ```bash
-sudo keytool -import -alias example.local -keystore "$JAVA_HOME/lib/security/cacerts" -file ./certs/example.ca.pem -storepass changeit -noprompt
+sudo keytool -import -alias example.ca -keystore "$JAVA_HOME/lib/security/cacerts" -file ./certs/example.ca.pem -storepass changeit -noprompt
 ```
 
 Remove trust when finished with testing or if you need to update the root certificate: 
 
 ```bash
-sudo keytool -delete -alias example.local -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -noprompt
+sudo keytool -delete -alias example.ca -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -noprompt
 ```
 
 ## Build and Run the Token Handler API

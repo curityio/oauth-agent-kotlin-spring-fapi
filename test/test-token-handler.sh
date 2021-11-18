@@ -34,7 +34,7 @@ mkdir -p data
 #
 echo '1. Testing OPTIONS request with an invalid web origin ...'
 HTTP_STATUS=$(curl -k -i -s -X OPTIONS "$BFF_API_BASE_URL/login/start" \
--H "origin: http://malicious-site.com" \
+-H "origin: https://malicious-site.com" \
 -o $RESPONSE_FILE -w '%{http_code}')
 if [ "$HTTP_STATUS" == '000' ]; then
   echo '*** Connectivity problem encountered, please check endpoints and whether an HTTP proxy tool is running'
@@ -71,7 +71,7 @@ echo '2. OPTIONS with valid web origin granted access successfully'
 #
 echo '3. Testing end login POST with invalid web origin ...'
 HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
--H "origin: http://malicious-site.com" \
+-H "origin: https://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -d '{"pageUrl":"'$WEB_BASE_URL'"}' \
@@ -112,7 +112,7 @@ echo '4. POST to endLogin for an unauthenticated page load completed successfull
 #
 echo '5. Testing POST to start login from invalid web origin ...'
 HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/start" \
--H "origin: http://malicious-site.com" \
+-H "origin: https://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
@@ -154,7 +154,7 @@ fi
 # Next verify that the OAuth state is correctly verified against the request value
 #
 echo '8. Testing posting a malicious code and state into the browser ...'
-APP_URL='http://www.example.com?code=hi0f1340y843thy3480&state=nu2febouwefbjfewbj'
+APP_URL="$WEB_BASE_URL?code=hi0f1340y843thy3480&state=nu2febouwefbjfewbj"
 PAGE_URL_JSON='{"pageUrl":"'$APP_URL'"}'
 HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
@@ -207,7 +207,7 @@ echo '9. Authenticated page reload was successful'
 #
 echo '10. Testing GET User Info from an untrusted origin ...'
 HTTP_STATUS=$(curl -k -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
--H "origin: http://malicious-site.com" \
+-H "origin: https://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
@@ -269,7 +269,7 @@ echo "12. GET User Info was successful"
 #
 echo '13. Testing POST to /refresh from an untrusted origin ...'
 HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
--H "origin: http://malicious-site.com" \
+-H "origin: https://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
@@ -399,7 +399,7 @@ echo '18. POST to /refresh with rotated refresh token completed successfully'
 #
 echo '19. Testing logout POST with invalid web origin ...'
 HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/logout" \
--H "origin: http://malicious-site.com" \
+-H "origin: https://malicious-site.com" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -d '{"pageUrl":"'$WEB_BASE_URL'"}' \

@@ -316,7 +316,7 @@
                 <description>Financial Grade SPA that uses a Token Handler API</description>
                 <mutual-tls>
                   <client-dn>CN=financial-grade-spa, OU=Example, O=Curity AB, C=SE</client-dn>
-                  <trusted-ca>bff_kotlin_client</trusted-ca>
+                  <trusted-ca>financial_grade_client_ca</trusted-ca>
                 </mutual-tls>
                 <redirect-uris>https://www.example.local/</redirect-uris>
                 <scope>openid</scope>
@@ -413,9 +413,9 @@
         </server-keystore>
         <client-truststore>
           <client-certificate>
-            <id>bff_kotlin_client</id>
-            <size>4096</size>
-            <keystore>data:application/pem;aes,v:S.b2l4TWhCTktGUzJhV3l0Sg==.KU7dlkswxt7_jbCFlemkQA==.KLlzzqzoxHQ2eolqbNgwwNjCIVpCq9j_8RWzbnf6r64mV07MnTiVsJCsUnUU8iO0bFz2xYB6x3RwLU4ZdlXQv4AxxkmaLsXChJeqnvjovLZs-AFWBOR2G-30zh3OHrgvrwQsbqAw_1Q5i7wFzUjwyf3P-TTjIPSCFPejWO9cYsBlkqgz78LGW-3D334nNlfdSVbHHDHA2qbkz3AT2pBZupjxyg95MKY66ZfjKHEL9SyllTeC91xzTwwI2jNahsRR6tgenv-BYEWBtskJkCaOLilRPttORcKEPSJRTkPSg_w9MikN-hkGIuNiu1mpLlVgN9cxBAB_UCdINmjMIacRMKhiNAKBAJDxVWvwqkwceOl-TTcn5kmxtvLDiZKSoqqdjPcaY515X_AHEPV_z0J8AH8jF_-qI0HZI-UUbZH_KE-O37g-z6HBKEfn5MEErXqi7b98V6et3vIJmYiarQY4Od5Hs0oLzZ7ycEyymXAnnpiWB10EmE4fXwv_5PGZG-jZOUuXlRj_S3qcMnAl8WJMcU3dEG6k_tVvlBRTqoDMSVgrMutAcclZMgROtsO_3K-WA_JYjJTAiJFT7mvV2-jELj8NacKAxZyou9liLBHKpUhuwhVB2A_sDXrkrX9xBw1jTUgwcNwbd0kN92mZf5mjrQ6FWafn2tpFBweIQIyMYM3hoh12C9PTQaJ8RpcZiTe9fxUCJonl1CGFEuvpx8ATQBu889U5icbNCa3-r6uPyNbkAs3zYKm_C6MrZj9XUsDKi8rX2gICSSqf_ThyHnATloSUv2hlNVz6b0wLRopiBzeaj0jxOz7yaHN4gn41idsluoQ6-kFvJHMY4KSyN2qdcztuXntSP0VMn3VbuiAE0JUA0mcV6ZD6vyhBoNrkZm2_8tHYKh1GTzIqP69LHsYFUU8Vu-zoTF0i5Rpu_SXJ6YLGZwmLs0l0lfrcK9xdfZNM3B5xp35k6u5VrsB6puXq9zCQ7JBDq5mKIAMuD37dfzGiMvHrg-PApS_txkGQsQh9nZ0gl6y3DHBh6hPOaZmkrtRomlwDEInaT0hFbEP2SK11jlw62FcH8STPCVKll-PJAkLIiqN5cPawEdseY_x8SbnhZKkqrH9tFd0akUDH0Jtm1QquFaBiazBPTYOEIm3X34q0NgsOE9BEwaOUQC46wkkMwliFeFN9r1XqKQ4ZWWAbC3UyZdNQOPb4DuMrYg2a3PHC9Wo5L3o851__cAYx2iKVeUQ9TF_icmCAjyb0FxzJ-XDhJrVxuZJ-OTDwurM_x8YKVdQuWE4SlN_M22Vz7l1Xnze9qmnIHk5iCEMKPwz1xZER1fbzWO-wwDfohXMzQT99ZyP8WgHdgNkYBq-boeHf0EPtD_uJwVVKn86plDig_UsQuPhPtXqHmSpkmvd9CN7LVwox5L9l7DaRkXOdITziM0NvMovWDPtemxnYsKT0EP0zv7OjLmAQ7iGdNKSMtTV8LpqalHY_gz0bhqq0pbGumlM6kX2QPxy2bDXW2DZl-ex5XipqJRQ50QYPUz6-Qok51zkIQ_LT7dg-Wgs5LJ2bUIIgbtnZTVhRYfN49xPVuI03DlKl3OxIiSiFObv5Ce9HaDkoC85lmM5uvMK5baV6mDszbVEALi0_8uiNTLn5MyM2FMSFUAVcS81wZdvNHxn660xi4TqRU4sXMK_NZOfGxheRTZsfFU1qyfea9_BLZeMCn_zCFBwYzgrjfkgW8j-nhDb8AZnTBsbhjBj2jVYHxHJtbziaiR_KBha4DxerN43sAvwtGAtFnL7qBgb7JWnY7Kfa37Si_6Wdvbi6caxBNGN1jw_v319xb5CB2Sf7P-VkW_ajIkBz_MsGpBfaZ0MtK2qFmf5s7Aj1__Od6DBn6XybcODYtDeVUE4GNB_gkOpMZl5TFKSH5drxPkTa3ipSBoPfZXh5Ew2WK48UnhqQIlhb_GL1swA1yJ5l4t1tDO6AiYJrRXm4zfQ3FN3Yj4qL7KKe2_yAknV0fBeR6k1l14JbzFgGFUKtcL0-J2_ATjVahkN2UD3v8KToKkUoso8puw5O7PAtFXCpLgJkg1KH5VcyqW9oNtA5X5rI4DLtSvj6ZjvCackG-7IyUdZWMDH8gdclBhJG8Id3zftujR38Ow4kFdl11z9E27oII0fHC6a48plOOgkfeIbwGTGjYOcFTTgejhGE67GiWuTu6pJlLmpf6Nf5e56vfQkY7K5vUox5uLTWoLtqMqYxFNOIRK-MhP1WNB8OblI34GXfPtpMr8Tt3AbKX7lnnG10-IWAAaLfVDgeKO9l3tyDj6sTJzGuyeKe4eYyw4RnfzwkhAbpGLDdbUxUmt1Xstl41NzG8QdYV99WIvcsSOB7tJBPzuLu6Q3PTrkokijXQZSyFf1w8lYdvQEMjiLY86nVzGsQT1Up7h6ElJEmNsCtZDMmyQfuncVatG8RZyQodNwaisoNnvxtTDWX9yyUOVqaPtp7xbRNOfpcuV3FCAKw4FUebeYH0-YBE7bJd1rSnAdImA==.mBsV827gdYewvDpEpTNrrt8Gn07q37g2BJc3lNVWU_c=</keystore>
+            <id>financial_grade_client_ca</id>
+            <size>2048</size>
+            <keystore>#{FINANCIAL_GRADE_CLIENT_CA}</keystore>
             <type>rsa</type>
           </client-certificate>
         </client-truststore>

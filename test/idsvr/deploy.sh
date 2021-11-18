@@ -25,6 +25,12 @@ if [ ! -f './license.json' ]; then
 fi
 
 #
+# Set an environment variable to reference the root CA used for the development setup
+# This is passed through to the Docker Compose file and then to the config_backup.xml file
+#
+export FINANCIAL_GRADE_CLIENT_CA=$(openssl base64 -in "../../certs/example.ca.pem" | tr -d '\n')
+
+#
 # Run Docker to deploy the Curity Identity Server
 #
 docker compose --project-name tokenhandler up --detach --force-recreate --remove-orphans
