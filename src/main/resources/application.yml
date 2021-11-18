@@ -19,6 +19,7 @@ bff:
   issuer: 'https://login.example.local:8443/oauth/v2/oauth-anonymous'
   jwksUri: 'https://login.example.local:8443/oauth/v2/oauth-anonymous/jwks'
   authorizeEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-authorize'
+  authorizeEndpointExternal: 'https://login.example.local:8443/oauth/v2/oauth-authorize'
   logoutEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-session/logout'
   tokenEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-token'
 
