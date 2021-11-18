@@ -1,4 +1,4 @@
-# A Token Handler backend component
+# A JWM Token Handler for Financial Grade SPAs
 
 [![Quality](https://img.shields.io/badge/quality-experiment-red)](https://curity.io/resources/code-examples/status/)
 [![Availability](https://img.shields.io/badge/availability-source-blue)](https://curity.io/resources/code-examples/status/)
@@ -29,12 +29,12 @@ The Token Handler responds with a JSON containing the `authorizationRequestUrl` 
 
 #### Example request
 
-`POST https://th.example.com/login/start`
+`POST https://api.example.com/tokenhandler/login/start`
 
 Response:
 ```json
 {
-  "authorizationRequestUrl": "https://idsvr.example.com/oauth/authorize?client_id=bff_client&request_uri=urn:ietf:params:oauth:request_uri:c0...43"
+  "authorizationRequestUrl": "https://idsvr.example.com/oauth/authorize?client_id=spa_client&request_uri=urn:ietf:params:oauth:request_uri:c0...43"
 }
 ```
 
@@ -45,7 +45,7 @@ This endpoint should be be called by the SPA on any page load. The SPA sends the
 #### Example request
 
 ```http
-POST https://th.example.com/login/end
+POST https://api.example.com/tokenhandler/login/end
 pageUrl=https://www.example.com?response=eyJ...
 ```
 
@@ -58,7 +58,7 @@ Endpoint which returns claims of the ID token contained in the session cookie.
 #### Example
 
 ```http
-GET https://th.example.com
+GET https://api.example.com/tokenhandler
 Cookie: myBFFSess=2558e7806c0523fd96d105...
 ```
 
@@ -69,7 +69,7 @@ Response
   "exp":1626263589,
   "nbf":1626259989,
   "jti":"34e76304-0bc3-46ee-bc70-e21685eb5282",
-  "iss":"https://idsvr.example.com/oauth",
+  "iss":"https://login.example.com/oauth",
   "aud":"th-client",
   "sub":"user",
   "auth_time":1626259937,
@@ -86,6 +86,8 @@ This endpoint can be called to get a logout URL. The SPA should navigate the use
 This endpoint can be called to force the TH to refresh the access token. If the TH is able to perform the refresh new cookies will be set in the response (which is a 204 response), otherwise the TH will respond with a 401 response (e.g. when the refresh token is expired) to inform the SPA that a new login is required. 
 
 ## Running the Token Handler Locally
+
+Follow the below steps to get set up for developing and testing the token handler:
 
 ### Prerequisites
 
