@@ -93,7 +93,7 @@ This endpoint can be called to force the TH to refresh the access token. If the 
 - Ensure that OpenSSL is installed
 - Ensure that Docker Desktop is installed
 - Ensre that the jq tool is installed
-- Ensure that you have a license file for the Curity Identity Server
+- Get a license file for the Curity Identity Server with financial grade features
 
 ### Update the Hosts File
 
