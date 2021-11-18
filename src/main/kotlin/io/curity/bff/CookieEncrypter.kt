@@ -10,7 +10,6 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
@@ -24,14 +23,18 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
 
     private val key = getKeyFromPassword()
 
-    private fun getKeyFromPassword(): SecretKey
-    {
+    private fun getKeyFromPassword(): SecretKey {
+
+        /*
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val spec: KeySpec = PBEKeySpec(config.encKey.toCharArray(), config.salt.toByteArray(), 65536, 256)
         return SecretKeySpec(
             factory.generateSecret(spec)
                 .encoded, "AES"
-        )
+        )*/
+
+        // This is an attempt to enable the BFF token plugin to decrypt the cookie correctly
+        return SecretKeySpec(config.encKey.toByteArray(), 0, config.encKey.length, "AES")
     }
 
     suspend fun getEncryptedCookie(cookieName: String, cookieValue: String, cookieOptions: CookieSerializeOptions) =
