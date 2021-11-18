@@ -313,9 +313,9 @@
               <client>
                 <id>spa-client</id>
                 <client-name>spa-client</client-name>
-                <description>SPA that uses a Token Handler API</description>
+                <description>Financial Grade SPA that uses a Token Handler API</description>
                 <mutual-tls>
-                  <client-dn>CN=bff-kotlin-client, OU=Example, O=Curity AB, C=SE</client-dn>
+                  <client-dn>CN=financial-grade-spa, OU=Example, O=Curity AB, C=SE</client-dn>
                   <trusted-ca>bff_kotlin_client</trusted-ca>
                 </mutual-tls>
                 <redirect-uris>https://www.example.local/</redirect-uris>

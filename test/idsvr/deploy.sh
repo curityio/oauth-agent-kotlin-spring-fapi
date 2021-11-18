@@ -44,7 +44,7 @@ done
 #
 # Add the SSL key and use the private key password to protect it in transit
 #
-export IDENTITY_SERVER_TLS_DATA=$(openssl base64 -in ../../certs/example.local.p12 | tr -d '\n')
+export IDENTITY_SERVER_TLS_DATA=$(openssl base64 -in ../../certs/example.server.p12 | tr -d '\n')
 echo "Updating SSL certificate ..."
 HTTP_STATUS=$(curl -k -s \
 -X POST "$RESTCONF_BASE_URL/base:facilities/crypto/add-ssl-server-keystore" \

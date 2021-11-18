@@ -23,7 +23,7 @@ bff:
   tokenEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-token'
 
   ssl:
-    key-store: ./certs/example.local.p12
+    key-store: ./certs/example.client.p12
     key-store-password: Password1
     trust-store: ./certs/example.ca.p12
     trust-store-password: Password1
@@ -31,5 +31,5 @@ bff:
 server:
   port: 8080
   ssl:
-    key-store: ./certs/example.local.p12
+    key-store: ./certs/example.server.p12
     key-store-password: 'Password1'
