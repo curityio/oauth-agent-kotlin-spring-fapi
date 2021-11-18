@@ -66,8 +66,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         val cipher: Cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.ENCRYPT_MODE, key, iv)
         val cipherText: ByteArray = cipher.doFinal(input.toByteArray())
-        return Base64.getEncoder()
-            .encodeToString(cipherText)
+        return cipherText.toHexString();
     }
 
     private fun decrypt(
@@ -76,10 +75,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
     {
         val cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.DECRYPT_MODE, key, iv)
-        val plainText = cipher.doFinal(
-            Base64.getDecoder()
-                .decode(cipherText)
-        )
+        val plainText = cipher.doFinal(cipherText.decodeHex())
         return String(plainText)
     }
 
