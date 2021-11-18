@@ -3,7 +3,6 @@ package io.curity.bff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
-import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import java.time.Duration
@@ -47,10 +46,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
             kotlin.run {
                 val iv = generateIv()
                 return@withContext "${
-                    String(
-                        Base64.getEncoder().encode(iv.iv.toHex()),
-                        StandardCharsets.UTF_8
-                    )
+                    iv.iv.toHexString()
                 }:${encrypt("AES/CBC/PKCS5Padding", value, iv)}"
             }
         }
@@ -92,11 +88,16 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         return withContext(Dispatchers.Default) {
             val valueArray = cookieValue.split(":")
 
-            val iv = String(Base64.getDecoder().decode(valueArray[0]), StandardCharsets.UTF_8)
+            val iv = valueArray[0]
             val cipherText = valueArray[1]
 
             return@withContext decrypt("AES/CBC/PKCS5Padding", cipherText, key, IvParameterSpec(iv.decodeHex()))
         }
+    }
+
+    fun ByteArray.encodeHex(): String
+    {
+        return ""
     }
 
     fun String.decodeHex(): ByteArray
