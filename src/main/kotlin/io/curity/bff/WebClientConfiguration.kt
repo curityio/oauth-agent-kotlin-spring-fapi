@@ -1,7 +1,6 @@
 package io.curity.bff
 
 import io.netty.handler.ssl.SslContextBuilder
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -41,7 +40,6 @@ class WebClientConfiguration
 
         val sslContext = SslContextBuilder.forClient()
             .keyManager(keyManager)
-            //.trustManager(InsecureTrustManagerFactory.INSTANCE)
             .trustManager(trustManager)
             .build()
         val httpClient = HttpClient.create().secure { it.sslContext(sslContext) }

@@ -88,6 +88,7 @@
     <profile>
       <id>token-service</id>
       <type xmlns:as="https://curity.se/ns/conf/profile/oauth">as:oauth-service</type>
+      <expose-detailed-error-messages/>
       <settings>
         <authorization-server xmlns="https://curity.se/ns/conf/profile/oauth">
           <client-authentication>
@@ -315,7 +316,7 @@
                 <client-name>spa-client</client-name>
                 <description>Financial Grade SPA that uses a Token Handler API</description>
                 <mutual-tls>
-                  <client-dn>CN=financial-grade-spa, OU=Example, O=Curity AB, C=SE</client-dn>
+                  <client-dn>CN="financial-grade-spa, OU=Example, O=Curity AB, C=SE"</client-dn>
                   <trusted-ca>financial_grade_client_ca</trusted-ca>
                 </mutual-tls>
                 <redirect-uris>https://www.example.local/</redirect-uris>

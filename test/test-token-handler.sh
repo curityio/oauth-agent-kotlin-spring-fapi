@@ -153,8 +153,8 @@ fi
 #
 # Next verify that the OAuth state is correctly verified against the request value
 #
-echo '8. Testing posting a malicious code and state into the browser ...'
-APP_URL="$WEB_BASE_URL?code=hi0f1340y843thy3480&state=nu2febouwefbjfewbj"
+echo '8. Testing posting a previous response into the browser ...'
+APP_URL="$WEB_BASE_URL?response=eyJraWQiOiItMTg2MTcwNTU3MCIsIng1dCI6Inl6VFBLMlZrRnlyb2pzbDhTNlNXa3BtR2VGVSIsImFsZyI6IlJTMjU2In0.eyJleHAiOjE2MzcyMjk2MjMsImlzcyI6Imh0dHBzOi8vbG9naW4uZXhhbXBsZS5sb2NhbDo4NDQzL29hdXRoL3YyL29hdXRoLWFub255bW91cyIsImF1ZCI6InNwYS1jbGllbnQiLCJpYXQiOjE2MzcyMjk2MDMsInB1cnBvc2UiOiJhdXRoel9yZXNwb25zZSIsImNvZGUiOiJZUGtnVEhDVTg0YkFnM0ZzZU1LQUdmVTdRZDk5TGlvQiIsInN0YXRlIjoiTVRKM3FCdWxDZ0sxc1hFcWpyaUlsUVdGM25jbnlRNTlXSkxEUlJ4YTl6emlpY2VRbFV4eGFtVldDTVpPRFhNbyIsInNlc3Npb25fc3RhdGUiOiJwUDJsVFo2UnR0cFpscENhMU5DWXV2VkNoeXZVSVpNeWVJMUp4bEY5RnlRXHUwMDNkLk5HcVF6TWJ4THFzZCJ9.RaRx9cvNRpzkagNdfePNoxW4aQfcG3KbG5__ysF-nkeFiffDX66hnYvTiU9FNolCu4uCTsN2QqowIyf3FYi4KfH5cKn6kAoQPvDbxUcYL2oNTpCiT16M5Q9bb8kJaFJfOFT0-bxDTYpbdzOm3TmTkyr74M5cnuunluBr3I34sRwrejz9dP9cLQnTfyVuMhtS_2niDcjIxkNu6bMKtNUc3_Ww2oidzSIxxCL0WAxsfDqwpGswDsssG45PnEIh3spb6kCiwR5wjJNTcBBxYyixjXQ_EoyZ-ASonK1P2fTR1LKK3Y79wvmjmQXYo3F4rujPt9wTa5ydu9Ic36D7pibaHA"
 PAGE_URL_JSON='{"pageUrl":"'$APP_URL'"}'
 HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
@@ -211,16 +211,10 @@ HTTP_STATUS=$(curl -k -i -s -X GET "$BFF_API_BASE_URL/userInfo" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '401' ]; then
+echo "$HTTP_STATUS"
+if [ "$HTTP_STATUS" != '403' ]; then
   echo '*** Invalid user info request did not fail as expected'
   exit
-fi
-JSON=$(tail -n 1 $RESPONSE_FILE) 
-echo $JSON | jq
-CODE=$(jq -r .code <<< "$JSON")
-if [ "$CODE" != 'unauthorized_request' ]; then
-   echo "*** User Info returned an unexpected error code"
-   exit
 fi
 echo '10. GET User Info request for an untrusted origin was handled correctly'
 
@@ -273,16 +267,9 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/refresh" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '401' ]; then
+if [ "$HTTP_STATUS" != '403' ]; then
   echo '*** Invalid token refresh request did not fail as expected'
   exit
-fi
-JSON=$(tail -n 1 $RESPONSE_FILE) 
-echo $JSON | jq
-CODE=$(jq -r .code <<< "$JSON")
-if [ "$CODE" != 'unauthorized_request' ]; then
-   echo "*** Refresh returned an unexpected error code"
-   exit
 fi
 echo '13. POST to /refresh for an untrusted origin was handled correctly'
 
@@ -404,16 +391,9 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/logout" \
 -H 'accept: application/json' \
 -d '{"pageUrl":"'$WEB_BASE_URL'"}' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '401' ]; then
+if [ "$HTTP_STATUS" != '403' ]; then
   echo '*** Invalid logout request did not fail as expected'
   exit
-fi
-JSON=$(tail -n 1 $RESPONSE_FILE)
-echo $JSON | jq
-CODE=$(jq -r .code <<< "$JSON")
-if [ "$CODE" != 'unauthorized_request' ]; then
-   echo "*** Logout returned an unexpected error code"
-   exit
 fi
 echo '19. POST to logout with an invalid web origin was successfully rejected'
 
@@ -488,10 +468,10 @@ echo $JSON | jq
 #
 echo '23. Testing following the end session redirect redirect ...'
 END_SESSION_REQUEST_URL=$(jq -r .url <<< "$JSON")
-HTTP_STATUS=$(curl -k -i -L -s -X GET $END_SESSION_REQUEST_URL \
+HTTP_STATUS=$(curl -k -i -s -X GET $END_SESSION_REQUEST_URL \
 -c $CURITY_COOKIES_FILE \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ $HTTP_STATUS != '200' ]; then
+if [ $HTTP_STATUS != '303' ]; then
   echo "*** Problem encountered during an OpenID Connect end session redirect, status: $HTTP_STATUS"
   exit
 fi
@@ -507,15 +487,8 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H 'accept: application/json' \
 -d 'XXX' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '500' ]; then
+if [ "$HTTP_STATUS" != '400' ]; then
   echo '*** Posting malformed JSON did not fail as expected'
   exit
-fi
-JSON=$(tail -n 1 $RESPONSE_FILE) 
-echo $JSON | jq
-CODE=$(jq -r .code <<< "$JSON")
-if [ "$CODE" != 'server_error' ]; then
-   echo '*** Malformed JSON post returned an unexpected error code'
-   exit
 fi
 echo '24. Malformed JSON was handled in the expected manner'

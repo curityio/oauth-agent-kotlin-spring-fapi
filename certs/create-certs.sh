@@ -31,7 +31,7 @@ esac
 #
 TRUSTSTORE_FILE_PREFIX='example.ca'
 TRUSTSTORE_PASSWORD='Password1'
-TRUSTSTORE_DESCRIPTION='Self Signed CA for example.local'
+TRUSTSTORE_NAME='Self Signed CA for example.local'
 
 #
 # Server certificate parameters
@@ -44,7 +44,7 @@ WILDCARD_DOMAIN_NAME='*.example.local'
 # Client certificate parameters used for Mutual TLS
 #
 CLIENT_KEYSTORE_FILE_PREFIX='example.client'
-CLIENT_KEYSTORE_NAME='CN=financial-grade-spa, OU=Example, O=Curity AB, C=SE'
+CLIENT_KEYSTORE_NAME='financial-grade-spa, OU=Example, O=Curity AB, C=SE'
 CLIENT_KEYSTORE_PASSWORD='Password1'
 
 #
@@ -59,7 +59,7 @@ openssl req \
     -nodes \
     -key $TRUSTSTORE_FILE_PREFIX.key \
     -out $TRUSTSTORE_FILE_PREFIX.pem \
-    -subj "/CN=$TRUSTSTORE_DESCRIPTION" \
+    -subj "/CN=$TRUSTSTORE_NAME" \
     -reqexts v3_req \
     -extensions v3_ca \
     -sha256 \

@@ -44,7 +44,7 @@ mkdir -p data
 #
 # First get the authorization request URL
 #
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/start" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/start" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -65,7 +65,7 @@ AUTHORIZATION_REQUEST_URL=$(jq -r .authorizationRequestUrl <<< "$JSON")
 #
 # Follow redirects until the login HTML form is returned and save cookies
 #
-HTTP_STATUS=$(curl -i -L -s -X GET "$AUTHORIZATION_REQUEST_URL" \
+HTTP_STATUS=$(curl -k -i -L -s -X GET "$AUTHORIZATION_REQUEST_URL" \
 -c $CURITY_COOKIES_FILE \
 -o $RESPONSE_FILE -w '%{http_code}')
 if [ $HTTP_STATUS != '200' ]; then
@@ -76,7 +76,7 @@ fi
 #
 # Post up the test credentials, sending then regetting cookies
 #
-HTTP_STATUS=$(curl -i -s -X POST "$AUTHORIZATION_SERVER_BASE_URL/authn/authentication/Username-Password" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$AUTHORIZATION_SERVER_BASE_URL/authn/authentication/Username-Password" \
 -H 'Content-Type: application/x-www-form-urlencoded' \
 -b $CURITY_COOKIES_FILE \
 -c $CURITY_COOKIES_FILE \
@@ -93,7 +93,7 @@ fi
 #
 TOKEN=$(getHtmlFormValue 'token')
 STATE=$(getHtmlFormValue 'state')
-HTTP_STATUS=$(curl -i -s -X POST "$AUTHORIZATION_SERVER_BASE_URL/oauth/v2/oauth-authorize?client_id=$CLIENT_ID" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$AUTHORIZATION_SERVER_BASE_URL/oauth/v2/oauth-authorize?client_id=$CLIENT_ID" \
 -H 'Content-Type: application/x-www-form-urlencoded' \
 -b $CURITY_COOKIES_FILE \
 -c $CURITY_COOKIES_FILE \
@@ -119,7 +119,7 @@ echo $PAGE_URL_JSON | jq
 #
 # End the login by swapping the code for tokens
 #
-HTTP_STATUS=$(curl -i -s -X POST "$BFF_API_BASE_URL/login/end" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
