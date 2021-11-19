@@ -1,4 +1,4 @@
-# A Token Handler backend component
+# A JWM Token Handler for Financial Grade SPAs
 
 [![Quality](https://img.shields.io/badge/quality-experiment-red)](https://curity.io/resources/code-examples/status/)
 [![Availability](https://img.shields.io/badge/availability-source-blue)](https://curity.io/resources/code-examples/status/)
@@ -29,12 +29,12 @@ The Token Handler responds with a JSON containing the `authorizationRequestUrl` 
 
 #### Example request
 
-`POST https://th.example.com/login/start`
+`POST https://api.example.com/tokenhandler/login/start`
 
 Response:
 ```json
 {
-  "authorizationRequestUrl": "https://idsvr.example.com/oauth/authorize?client_id=bff_client&request_uri=urn:ietf:params:oauth:request_uri:c0...43"
+  "authorizationRequestUrl": "https://idsvr.example.com/oauth/authorize?client_id=spa_client&request_uri=urn:ietf:params:oauth:request_uri:c0...43"
 }
 ```
 
@@ -45,8 +45,8 @@ This endpoint should be be called by the SPA on any page load. The SPA sends the
 #### Example request
 
 ```http
-POST https://th.example.com/login/end
-pageUrl=http://www.example.com?response=eyJ...
+POST https://api.example.com/tokenhandler/login/end
+pageUrl=https://www.example.com?response=eyJ...
 ```
 
 The response will contain a few `Set-Cookie` headers.
@@ -58,7 +58,7 @@ Endpoint which returns claims of the ID token contained in the session cookie.
 #### Example
 
 ```http
-GET https://th.example.com
+GET https://api.example.com/tokenhandler
 Cookie: myBFFSess=2558e7806c0523fd96d105...
 ```
 
@@ -69,7 +69,7 @@ Response
   "exp":1626263589,
   "nbf":1626259989,
   "jti":"34e76304-0bc3-46ee-bc70-e21685eb5282",
-  "iss":"https://idsvr.example.com/oauth",
+  "iss":"https://login.example.com/oauth",
   "aud":"th-client",
   "sub":"user",
   "auth_time":1626259937,
@@ -85,16 +85,99 @@ This endpoint can be called to get a logout URL. The SPA should navigate the use
 
 This endpoint can be called to force the TH to refresh the access token. If the TH is able to perform the refresh new cookies will be set in the response (which is a 204 response), otherwise the TH will respond with a 401 response (e.g. when the refresh token is expired) to inform the SPA that a new login is required. 
 
-## Running the Token Handler
+## Running the Token Handler Locally
 
-To run the Token Handler follow these steps:
+Follow the below steps to get set up for developing and testing the token handler:
 
-- In `src/main/resources/application.yml` set proper configuration for your environment: client ID, Authorization Server endpoints, scopes required, etc.
-- Also in `application.yml` in the SSL section set proper files and passwords for the keystore (the certificate used by the client to identify itself) and the trustore (the certificate of your Authorization Server). The certificate store files should be located in the `src/main/resources` folder.
-- Make sure that the client is properly configured in your Authorization Server:
-   - client authentication is mTLS with the same certificate as in the keystore
-   - the client can use PAR
-   - the client can use JARM responses
-- Make sure that the Authorization Server's certificate is also added to your Java's cacert keystore. The jose4j library will call the JWKS endpoint of the Authorization Server, and it must be able to verify the AS's certificate. 
+### Prerequisites
 
-Now you can run the Token Handler. You can use the example SPA to test the Token Handler: https://github.com/curityio/web-oauth-via-bff/tree/main/code/spa.
+- Ensure that Java 11 or above is installed
+- Ensure that OpenSSL is installed
+- Ensure that Docker Desktop is installed
+- Ensre that the jq tool is installed
+- Get a license file for the Curity Identity Server with financial grade features
+
+### Update the Hosts File
+
+Ensure that the hosts file contains the following development domain names:
+
+```text
+127.0.0.1  api.example.local login.example.local
+:1 localhost
+```
+
+### Understand URLs
+
+| Component | Base URL | Usage |
+| --------- | -------- | ----- |
+| Token Handler API | https://api.example.local:8080/tokenhandler | This acts as a Back End for Front End for SPAs |
+| Curity Identity Server | https://login.example.local:8443 | This will receive a Mutual TLS secret from the token handler | 
+
+### Generate Certificates
+
+Run this script to create development certificates for the above domains: 
+
+```bash
+cd certs
+./create-certs.sh
+```
+
+## Configure Java SSL Trust
+
+Run the following command from the root folder to configure the token handler API to trust the root certificate:  
+
+```bash
+sudo keytool -import -alias example.ca -keystore "$JAVA_HOME/lib/security/cacerts" -file ./certs/example.ca.pem -storepass changeit -noprompt
+```
+
+Remove trust when finished with testing or if you need to update the root certificate: 
+
+```bash
+sudo keytool -delete -alias example.ca -keystore "$JAVA_HOME/lib/security/cacerts" -storepass changeit -noprompt
+```
+
+### Build and Run the Token Handler API
+
+Run this command from the root folder and the API will then listen on SSL over port 8080: 
+
+```bash
+./gradlew bootRun
+```
+
+Test that the API is contactable using this command from the root folder.\
+This will result in an unauthorized request initially:
+
+```bash
+curl --cacert ./certs/example.ca.pem -i -X POST https://api.example.local:8080/tokenhandler/refresh \
+-H "origin: https://www.example.local" \
+-d {}
+```
+
+### Deploy the Curity Identity Server
+
+Copy a license.json file with support for financial grade features into the test/idsvr folder and then run these commands:
+
+```bash
+cd test/idsvr
+./deploy.sh
+```
+
+### Test the Token Handler API
+
+The test script can be used to test the token handler's operations using the curl tool:
+
+```bash
+cd test
+./test-token-handler.sh
+```
+
+## Tutorial Documentation
+
+See the below tutorials for further details and to run an end-to-end solution in the browser:
+
+- [Financial Grade SPA Code Example](https://curity.io/resources/learn/financial-grade-spa-example/)
+- [Financial Grade Token Handler Code Example](https://curity.io/resources/learn/financial-grade-token-handler-example/)
+
+## More Information
+
+Please visit [curity.io](https://curity.io/) for more information about the Curity Identity Server.

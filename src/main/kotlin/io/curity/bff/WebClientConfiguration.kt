@@ -4,7 +4,6 @@ import io.netty.handler.ssl.SslContextBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.io.ClassPathResource
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
@@ -13,15 +12,18 @@ import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.TrustManagerFactory
 
-
 @Configuration
-class WebClientConfiguration()
+class WebClientConfiguration
 {
-    @Value("\${bff.ssl.key-store}") lateinit var sslKeyStore: String
-    @Value("\${bff.ssl.key-store-password}") lateinit var sslKeystorePassword: String
+    @Value("\${bff.ssl.key-store}")
+    lateinit var sslKeyStore: String
+    @Value("\${bff.ssl.key-store-password}")
+    lateinit var sslKeystorePassword: String
 
-    @Value("\${bff.ssl.trust-store}") lateinit var sslTrustStore: String
-    @Value("\${bff.ssl.trust-store-password}") lateinit var sslTruststorePassword: String
+    @Value("\${bff.ssl.trust-store}")
+    lateinit var sslTrustStore: String
+    @Value("\${bff.ssl.trust-store-password}")
+    lateinit var sslTruststorePassword: String
 
     @Bean
     fun webClient(): WebClient?
@@ -47,7 +49,7 @@ class WebClientConfiguration()
 
     private fun createKeyStore(keyStoreLocation: String, keyStorePassword: String): KeyStore
     {
-        FileInputStream(ClassPathResource(keyStoreLocation).file).use { fis ->
+        FileInputStream(keyStoreLocation).use { fis ->
             val ks = KeyStore.getInstance(KeyStore.getDefaultType())
             ks.load(fis, keyStorePassword.toCharArray())
             return ks

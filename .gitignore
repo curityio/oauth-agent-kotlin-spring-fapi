@@ -1,3 +1,7 @@
 build/
 .gradle/
 .idea/
+.DS_Store
+certs/example*
+test/data
+license.json

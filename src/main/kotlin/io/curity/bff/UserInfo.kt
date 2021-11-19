@@ -10,7 +10,7 @@ import java.util.Base64
 @Service
 class UserInfo(private val cookieEncrypter: CookieEncrypter, private val objectMapper: ObjectMapper)
 {
-    fun getUserInfo(idTokenCookie: String): Map<String, Any>
+    suspend fun getUserInfo(idTokenCookie: String): Map<String, Any>
     {
         val idToken: String
 

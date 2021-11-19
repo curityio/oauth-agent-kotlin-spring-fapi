@@ -1,7 +1,8 @@
 package io.curity.bff
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
-import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import java.time.Duration
@@ -9,7 +10,6 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
@@ -23,33 +23,36 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
 
     private val key = getKeyFromPassword()
 
-    //@Throws(NoSuchAlgorithmException::class, InvalidKeySpecException::class)
-    private fun getKeyFromPassword(): SecretKey
-    {
+    private fun getKeyFromPassword(): SecretKey {
+
+        /*
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val spec: KeySpec = PBEKeySpec(config.encKey.toCharArray(), config.salt.toByteArray(), 65536, 256)
         return SecretKeySpec(
             factory.generateSecret(spec)
                 .encoded, "AES"
-        )
+        )*/
+
+        // This is an attempt to enable the BFF token plugin to decrypt the cookie correctly
+        return SecretKeySpec(config.encKey.toByteArray(), 0, config.encKey.length, "AES")
     }
 
-    fun getEncryptedCookie(cookieName: String, cookieValue: String, cookieOptions: CookieSerializeOptions) =
+    suspend fun getEncryptedCookie(cookieName: String, cookieValue: String, cookieOptions: CookieSerializeOptions) =
         encryptValue(cookieValue).serializeToCookie(cookieName, cookieOptions)
 
-    fun getEncryptedCookie(cookieName: String, cookieValue: String): String =
+    suspend fun getEncryptedCookie(cookieName: String, cookieValue: String): String =
         encryptValue(cookieValue).serializeToCookie(cookieName, config.cookieSerializeOptions)
 
-    fun encryptValue(value: String): String
+    suspend fun encryptValue(value: String): String
     {
-        val iv = generateIv()
-        return "${
-            String(
-                Base64.getEncoder().encode(iv.iv.toHex()),
-                StandardCharsets.UTF_8
-            )
-        }:${encrypt("AES/CBC/PKCS5Padding", value, iv)}"
-
+        return withContext(Dispatchers.Default) {
+            kotlin.run {
+                val iv = generateIv()
+                return@withContext "${
+                    iv.iv.toHexString()
+                }:${encrypt("AES/CBC/PKCS5Padding", value, iv)}"
+            }
+        }
     }
 
     fun generateIv(): IvParameterSpec
@@ -59,14 +62,6 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         return IvParameterSpec(iv)
     }
 
-    //@Throws(
-    //    NoSuchPaddingException::class,
-    //    NoSuchAlgorithmException::class,
-    //    InvalidAlgorithmParameterException::class,
-    //    InvalidKeyException::class,
-    //    BadPaddingException::class,
-    //    IllegalBlockSizeException::class
-    //)
     fun encrypt(
         algorithm: String, input: String, iv: IvParameterSpec
     ): String
@@ -74,8 +69,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         val cipher: Cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.ENCRYPT_MODE, key, iv)
         val cipherText: ByteArray = cipher.doFinal(input.toByteArray())
-        return Base64.getEncoder()
-            .encodeToString(cipherText)
+        return cipherText.toHexString();
     }
 
     private fun decrypt(
@@ -84,21 +78,25 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
     {
         val cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.DECRYPT_MODE, key, iv)
-        val plainText = cipher.doFinal(
-            Base64.getDecoder()
-                .decode(cipherText)
-        )
+        val plainText = cipher.doFinal(cipherText.decodeHex())
         return String(plainText)
     }
 
-    fun decryptValueFromCookie(cookieValue: String): String
+    suspend fun decryptValueFromCookie(cookieValue: String): String
     {
-        val valueArray = cookieValue.split(":")
+        return withContext(Dispatchers.Default) {
+            val valueArray = cookieValue.split(":")
 
-        val iv = String(Base64.getDecoder().decode(valueArray[0]), StandardCharsets.UTF_8)
-        val cipherText = valueArray[1]
+            val iv = valueArray[0]
+            val cipherText = valueArray[1]
 
-        return decrypt("AES/CBC/PKCS5Padding", cipherText, key, IvParameterSpec(iv.decodeHex()))
+            return@withContext decrypt("AES/CBC/PKCS5Padding", cipherText, key, IvParameterSpec(iv.decodeHex()))
+        }
+    }
+
+    fun ByteArray.encodeHex(): String
+    {
+        return ""
     }
 
     fun String.decodeHex(): ByteArray

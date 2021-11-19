@@ -1,28 +1,36 @@
 bff:
   clientID: 'spa-client'
-  redirectUri: 'http://www.example.com/'
-  postLogoutRedirectURI: 'http://www.example.com/'
+  redirectUri: 'https://www.example.local/'
+  postLogoutRedirectURI: 'https://www.example.local/'
   scope: 'openid profile'
 
   encKey: 'NF65meV>Ls#8GP>;!Cnov)rIPRoK^.NP'
   salt: 'NF62meS>Ls%83P>;!Cdfv)rHTRoK!F)P'
   cookieNamePrefix: 'example'
-  bffEndpointsPrefix: '/bff'
+  bffEndpointsPrefix: 'tokenhandler'
   cookieSerializeOptions:
     httpOnly: true
     sameSite: true
-    secure: false
-    domain: '.example.com'
+    secure: true
+    domain: 'api.example.local'
     path: '/'
 
-  trustedWebOrigins: [ 'http://www.example.com' ]
-  issuer: 'http://login.example.com:8443/oauth/v2/oauth-anonymous'
-  jwksUri: 'http://login.example.com:8443/oauth/v2/oauth-anonymous/jwks'
-  authorizeEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-authorize'
-  logoutEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-session/logout'
-  tokenEndpoint: 'http://login.example.com:8443/oauth/v2/oauth-token'
+  trustedWebOrigins: [ 'https://www.example.local' ]
+  issuer: 'https://login.example.local:8443/oauth/v2/oauth-anonymous'
+  jwksUri: 'https://login.example.local:8443/oauth/v2/oauth-anonymous/jwks'
+  authorizeEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-authorize'
+  authorizeEndpointExternal: 'https://login.example.local:8443/oauth/v2/oauth-authorize'
+  logoutEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-session/logout'
+  tokenEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-token'
+
   ssl:
-    key-store: bff-kotlin-client.p12
-    key-store-password: Secr3t
-    trust-store: idsvr.p12
-    trust-store-password: Secr3t
+    key-store: ./certs/example.client.p12
+    key-store-password: Password1
+    trust-store: ./certs/example.ca.p12
+    trust-store-password: Password1
+
+server:
+  port: 8080
+  ssl:
+    key-store: ./certs/example.server.p12
+    key-store-password: 'Password1'
