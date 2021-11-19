@@ -28,7 +28,7 @@ For further details see the [Architecture](/doc/Architecture.md) article.
 
 ## Test Driven Token Handler Development
 
-See the [Setup.md](/doc/Setup.md) article for details on productive token handler development.\
+See the [Setup](/doc/Setup.md) article for details on productive token handler development.\
 This enables a test driven approach to developing the token handler, without the need for a browser.
 
 ## End-to-End SPA Flow
