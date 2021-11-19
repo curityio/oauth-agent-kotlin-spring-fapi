@@ -21,7 +21,7 @@ The following endpoints are used so that the SPA uses simple one liners to perfo
 | -------- | ----------- |
 | POST /login/start | Start a login by providing the request URL to the SPA and setting temporary cookies |
 | POST /login/end | Complete a login and issuing secure cookies for the SPA containing encrypted tokens |
-| GET /userInfo | Return Personally Identifiable Information (PII) fgor the SPA to display |
+| GET /userInfo | Return Personally Identifiable Information (PII) for the SPA to display |
 | POST /refresh | Ask the token handler to refresh an access token and rewrite cookies |
 | POST /logout | Ask the token handler to clear cookies and return an end session request URL |
 
@@ -34,10 +34,9 @@ This enables a test driven approach to developing the token handler, without the
 
 ## End-to-End SPA Flow
 
-See the below tutorials for further details and to run the end-to-end solution in a browser:
+See the below article for details on how to run the end-to-end solution in a browser:
 
 - [Financial Grade SPA Code Example](https://curity.io/resources/learn/financial-grade-spa-example/)
-- [Financial Grade Token Handler Code Example](https://curity.io/resources/learn/financial-grade-token-handler-example/)
 
 ## Website Documentation
 
