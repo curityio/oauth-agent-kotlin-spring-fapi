@@ -1,6 +1,6 @@
 # How to Develop the Token Handler
 
-Follow the below steps to get set up for developing and testing the token handler.
+Follow the below steps to get set up for developing and testing the financial-grade token handler.
 
 ## Prerequisites
 
