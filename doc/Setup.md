@@ -72,7 +72,7 @@ curl --cacert ./certs/example.ca.pem -i -X POST https://api.example.local:8080/t
 -d {}
 ```
 
-### Deploy the Curity Identity Server
+## Deploy the Curity Identity Server
 
 Copy a license file into the `test/idsvr` folder and then run the following commands:
 
@@ -81,7 +81,7 @@ cd test/idsvr
 ./deploy.sh
 ```
 
-### Test the Token Handler API
+## Test the Token Handler API
 
 The test script can then be used to verify the token handler's operations using the curl tool:
 
@@ -91,3 +91,12 @@ cd test
 ```
 
 ![API Tests](api-tests.png)
+
+## Free Docker Resources
+
+When finished with your development session, free Docker resources like this:
+
+```bash
+cd test/idsvr
+./teardown.sh
+```
