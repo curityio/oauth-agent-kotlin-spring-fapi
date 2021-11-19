@@ -1,18 +1,17 @@
-# How to Develop the Token Handler
+# How to Run the Financial-grade Token Handler Locally
 
-Follow the below steps to get set up for developing and testing the financial-grade token handler.
+Follow the below steps to get set up for developing and testing the token handler itself.
 
 ## Prerequisites
 
-- Ensure that Java 11 or above is installed
-- Ensure that OpenSSL is installed
-- Ensure that Docker Desktop is installed
-- Ensure that the jq tool is installed
+Ensure that these tools are installed locally:
 
-Also get a License File for the Curity Identity Server:
+- [Java 11 or later](https://openjdk.java.net/projects/jdk/11/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [jq](https://stedolan.github.io/jq/download/)
+- [OpenSSL](https://www.openssl.org/source/)
 
-- Sign in to the [Curity Developer Portal](https://developer.curity.io/) with your Github account.
-- You can get a [Free Community Edition License](https://curity.io/product/community/) if you are new to the Curity Identity Server.
+Also get a license file for the Curity Identity Server with support for financial-grade features.
 
 ## Update your Hosts File
 
@@ -72,7 +71,7 @@ curl --cacert ./certs/example.ca.pem -i -X POST https://api.example.local:8080/t
 -d {}
 ```
 
-### Deploy the Curity Identity Server
+## Deploy the Curity Identity Server
 
 Copy a license file into the `test/idsvr` folder and then run the following commands:
 
@@ -81,7 +80,7 @@ cd test/idsvr
 ./deploy.sh
 ```
 
-### Test the Token Handler API
+## Test the Token Handler API
 
 The test script can then be used to verify the token handler's operations using the curl tool:
 
@@ -91,3 +90,12 @@ cd test
 ```
 
 ![API Tests](api-tests.png)
+
+## Free Docker Resources
+
+When finished with your development session, free Docker resources like this:
+
+```bash
+cd test/idsvr
+./teardown.sh
+```
