@@ -9,7 +9,7 @@ Follow the below steps to get set up for developing and testing the financial-gr
 - Ensure that Docker Desktop is installed
 - Ensure that the jq tool is installed
 
-Also get a License File for the Curity Identity Server:
+Also get a License File for the Curity Identity Server with support for financial-grade features:
 
 - Sign in to the [Curity Developer Portal](https://developer.curity.io/) with your Github account.
 - You can get a [Free Community Edition License](https://curity.io/product/community/) if you are new to the Curity Identity Server.

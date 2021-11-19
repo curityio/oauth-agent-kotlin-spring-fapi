@@ -5,10 +5,11 @@
 
 ## Overview
 
-The token handler implements state-of-the-art Website security for Single Page Applications:
+The token handler implements an API driven `Back End for Front End (BFF)` for Single Page Applications.\
+This implementation provides state-of-the-art security suitable for financial-grade:
 
 - Strongest browser security with only `SameSite=strict` cookies
-- Financial-grade OpenID Connect flows and strong secrets
+- Financial-grade OpenID Connect flow using [PAR](https://tools.ietf.org/id/draft-lodderstedt-oauth-par-00.html),  [JARM](https://openid.net/specs/openid-financial-api-jarm.html) and a Mutual TLS secret
 
 ![Logical Components](/doc/logical-components.png)
 
@@ -26,17 +27,21 @@ The following endpoints are used so that the SPA uses simple one liners to perfo
 
 For further details see the [Architecture](/doc/Architecture.md) article.
 
-## Test Driven Token Handler Development
+## Token Handler Development
 
 See the [Setup](/doc/Setup.md) article for details on productive token handler development.\
 This enables a test driven approach to developing the token handler, without the need for a browser.
 
 ## End-to-End SPA Flow
 
-See the below tutorials for further details and to run an end-to-end solution in the browser:
+See the below tutorials for further details and to run the end-to-end solution in a browser:
 
 - [Financial Grade SPA Code Example](https://curity.io/resources/learn/financial-grade-spa-example/)
 - [Financial Grade Token Handler Code Example](https://curity.io/resources/learn/financial-grade-token-handler-example/)
+
+## Website Documentation
+
+See the [Curity OAuth for Web Home Page](https://curity.io/product/token-service/oauth-for-web/) for all resources on this design pattern.
 
 ## More Information
 
