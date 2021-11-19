@@ -1,4 +1,4 @@
-# A JWM Token Handler for Financial Grade SPAs
+# A Java based Token Handler for Financial Grade SPAs
 
 [![Quality](https://img.shields.io/badge/quality-experiment-red)](https://curity.io/resources/code-examples/status/)
 [![Availability](https://img.shields.io/badge/availability-source-blue)](https://curity.io/resources/code-examples/status/)

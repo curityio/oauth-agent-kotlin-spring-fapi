@@ -30,6 +30,14 @@ if [ ! -f './license.json' ]; then
 fi
 
 #
+# Check for certificate files
+#
+if [ ! -f '../../certs/example.client.p12' ]; then
+  echo "Please create development certificates before running this script"
+  exit 1
+fi
+
+#
 # Set an environment variable to reference the root CA used for the development setup
 # This is passed through to the Docker Compose file and then to the config_backup.xml file
 #
