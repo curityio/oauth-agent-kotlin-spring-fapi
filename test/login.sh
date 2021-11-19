@@ -17,6 +17,11 @@ CLIENT_ID=spa-client
 #export http_proxy='http://127.0.0.1:8888'
 
 #
+# Ensure that we are in the folder containing this script
+#
+cd "$(dirname "${BASH_SOURCE[0]}")"
+
+#
 # Get a header value from the HTTP response file
 #
 function getHeaderValue(){
