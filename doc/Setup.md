@@ -66,9 +66,8 @@ Alternatively the API can be run in an IDE of your choice:
 Test that the API is contactable by running this command from the root folder:
 
 ```bash
-curl --cacert ./certs/example.ca.pem -i -X POST https://api.example.local:8080/tokenhandler/refresh \
--H "origin: https://www.example.local" \
--d {}
+curl --cacert ./certs/example.ca.pem -X POST https://api.example.local:8080/tokenhandler/login/start \
+-H "origin: https://www.example.local" | jq
 ```
 
 ## Deploy the Curity Identity Server
