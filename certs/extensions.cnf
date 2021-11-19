@@ -1,0 +1,11 @@
+[ server_ext ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName=DNS:api.example.local,DNS:login.example.local
+extendedKeyUsage = serverAuth
+
+[ client_ext ]
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = clientAuth

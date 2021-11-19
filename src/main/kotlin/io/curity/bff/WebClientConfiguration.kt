@@ -4,7 +4,6 @@ import io.netty.handler.ssl.SslContextBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.core.io.ClassPathResource
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
@@ -12,7 +11,6 @@ import java.io.FileInputStream
 import java.security.KeyStore
 import javax.net.ssl.KeyManagerFactory
 import javax.net.ssl.TrustManagerFactory
-
 
 @Configuration
 class WebClientConfiguration
@@ -51,7 +49,7 @@ class WebClientConfiguration
 
     private fun createKeyStore(keyStoreLocation: String, keyStorePassword: String): KeyStore
     {
-        FileInputStream(ClassPathResource(keyStoreLocation).file).use { fis ->
+        FileInputStream(keyStoreLocation).use { fis ->
             val ks = KeyStore.getInstance(KeyStore.getDefaultType())
             ks.load(fis, keyStorePassword.toCharArray())
             return ks

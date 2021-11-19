@@ -154,7 +154,7 @@ class AuthorizationServerClient(
                 .bodyValue(body)
                 .awaitExchange { response -> handleAuthorizationServerResponse<PARResponse>(response, "PAR") }
 
-            return "${config.authorizeEndpoint}?client_id=${config.clientID}&request_uri=${parResponse.requestUri}"
+            return "${config.authorizeEndpointExternal}?client_id=${config.clientID}&request_uri=${parResponse.requestUri}"
         } catch (exception: WebClientRequestException)
         {
             throw AuthorizationServerException("Exception encountered when calling authorization server", exception)

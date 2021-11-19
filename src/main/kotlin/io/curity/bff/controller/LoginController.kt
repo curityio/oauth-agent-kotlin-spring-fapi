@@ -35,7 +35,6 @@ class LoginController(
     @PostMapping("/start")
     suspend fun startLogin(request: ServerHttpRequest, response: ServerHttpResponse): StartAuthorizationResponse
     {
-
         requestValidator.validateServletRequest(
             request,
             ValidateRequestOptions(requireCsrfHeader = false)

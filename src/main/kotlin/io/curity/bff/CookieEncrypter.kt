@@ -3,7 +3,6 @@ package io.curity.bff
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
-import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 import java.security.spec.KeySpec
 import java.time.Duration
@@ -11,7 +10,6 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
 import javax.crypto.SecretKeyFactory
@@ -25,14 +23,18 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
 
     private val key = getKeyFromPassword()
 
-    private fun getKeyFromPassword(): SecretKey
-    {
+    private fun getKeyFromPassword(): SecretKey {
+
+        /*
         val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val spec: KeySpec = PBEKeySpec(config.encKey.toCharArray(), config.salt.toByteArray(), 65536, 256)
         return SecretKeySpec(
             factory.generateSecret(spec)
                 .encoded, "AES"
-        )
+        )*/
+
+        // This is an attempt to enable the BFF token plugin to decrypt the cookie correctly
+        return SecretKeySpec(config.encKey.toByteArray(), 0, config.encKey.length, "AES")
     }
 
     suspend fun getEncryptedCookie(cookieName: String, cookieValue: String, cookieOptions: CookieSerializeOptions) =
@@ -47,10 +49,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
             kotlin.run {
                 val iv = generateIv()
                 return@withContext "${
-                    String(
-                        Base64.getEncoder().encode(iv.iv.toHex()),
-                        StandardCharsets.UTF_8
-                    )
+                    iv.iv.toHexString()
                 }:${encrypt("AES/CBC/PKCS5Padding", value, iv)}"
             }
         }
@@ -70,8 +69,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         val cipher: Cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.ENCRYPT_MODE, key, iv)
         val cipherText: ByteArray = cipher.doFinal(input.toByteArray())
-        return Base64.getEncoder()
-            .encodeToString(cipherText)
+        return cipherText.toHexString();
     }
 
     private fun decrypt(
@@ -80,10 +78,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
     {
         val cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.DECRYPT_MODE, key, iv)
-        val plainText = cipher.doFinal(
-            Base64.getDecoder()
-                .decode(cipherText)
-        )
+        val plainText = cipher.doFinal(cipherText.decodeHex())
         return String(plainText)
     }
 
@@ -92,11 +87,16 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         return withContext(Dispatchers.Default) {
             val valueArray = cookieValue.split(":")
 
-            val iv = String(Base64.getDecoder().decode(valueArray[0]), StandardCharsets.UTF_8)
+            val iv = valueArray[0]
             val cipherText = valueArray[1]
 
             return@withContext decrypt("AES/CBC/PKCS5Padding", cipherText, key, IvParameterSpec(iv.decodeHex()))
         }
+    }
+
+    fun ByteArray.encodeHex(): String
+    {
+        return ""
     }
 
     fun String.decodeHex(): ByteArray
