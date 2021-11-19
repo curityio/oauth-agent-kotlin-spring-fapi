@@ -4,7 +4,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import java.security.SecureRandom
-import java.security.spec.KeySpec
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
@@ -12,9 +11,7 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
-import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 @Service
@@ -69,7 +66,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
         val cipher: Cipher = Cipher.getInstance(algorithm)
         cipher.init(Cipher.ENCRYPT_MODE, key, iv)
         val cipherText: ByteArray = cipher.doFinal(input.toByteArray())
-        return cipherText.toHexString();
+        return cipherText.toHexString()
     }
 
     private fun decrypt(
@@ -92,11 +89,6 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
 
             return@withContext decrypt("AES/CBC/PKCS5Padding", cipherText, key, IvParameterSpec(iv.decodeHex()))
         }
-    }
-
-    fun ByteArray.encodeHex(): String
-    {
-        return ""
     }
 
     fun String.decodeHex(): ByteArray
