@@ -18,7 +18,7 @@ data class BFFConfigurationProperties(
     var jwksUri: String,
     var logoutEndpoint: String,
     var authorizeEndpoint: String,
-    var authorizeEndpointExternal: String,
+    var authorizeExternalEndpoint: String,
     var tokenEndpoint: String,
 
     // BFF session cookie and CORS configuration
@@ -53,7 +53,7 @@ class BFFConfiguration(configurationProperties: BFFConfigurationProperties)
     val jwksUri = configurationProperties.jwksUri
     val logoutEndpoint = configurationProperties.logoutEndpoint
     val authorizeEndpoint = configurationProperties.authorizeEndpoint
-    val authorizeEndpointExternal = configurationProperties.authorizeEndpointExternal
+    val authorizeExternalEndpoint = configurationProperties.authorizeExternalEndpoint
     val tokenEndpoint = configurationProperties.tokenEndpoint
 
     // BFF session cookie and CORS configuration
