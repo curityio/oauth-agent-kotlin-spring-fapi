@@ -1,36 +1,37 @@
 bff:
-  clientID: 'spa-client'
-  redirectUri: 'https://www.example.local/'
-  postLogoutRedirectURI: 'https://www.example.local/'
-  scope: 'openid profile'
+  clientID: ${CLIENT_ID:spa-client}
+  redirectUri: ${REDIRECT_URI:https://www.example.local/}
+  postLogoutRedirectURI: ${POST_LOGOUT_REDIRECT_URI:https://www.example.local/}
+  scope: ${SCOPE:openid profile}
 
-  encKey: 'NF65meV>Ls#8GP>;!Cnov)rIPRoK^.NP'
+  encKey: ${ENCRYPTION_KEY:NF65meV>Ls#8GP>;!Cnov)rIPRoK^.NP}
   salt: 'NF62meS>Ls%83P>;!Cdfv)rHTRoK!F)P'
-  cookieNamePrefix: 'example'
+  cookieNamePrefix: ${COOKIE_NAME_PREFIX:example}
   bffEndpointsPrefix: 'tokenhandler'
   cookieSerializeOptions:
     httpOnly: true
     sameSite: true
     secure: true
-    domain: 'api.example.local'
+    domain: ${COOKIE_DOMAIN:api.example.local}
     path: '/'
 
-  trustedWebOrigins: [ 'https://www.example.local' ]
-  issuer: 'https://login.example.local:8443/oauth/v2/oauth-anonymous'
-  jwksUri: 'https://login.example.local:8443/oauth/v2/oauth-anonymous/jwks'
-  authorizeEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-authorize'
-  authorizeEndpointExternal: 'https://login.example.local:8443/oauth/v2/oauth-authorize'
-  logoutEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-session/logout'
-  tokenEndpoint: 'https://login.example.local:8443/oauth/v2/oauth-token'
+  trustedWebOrigins:
+  - ${TRUSTED_WEB_ORIGIN:https://www.example.local}
+  issuer: ${ISSUER:https://login.example.local:8443/oauth/v2/oauth-anonymous}
+  jwksUri: ${JWKS_URI:https://login.example.local:8443/oauth/v2/oauth-anonymous/jwks}
+  authorizeEndpoint: ${AUTHORIZE_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-authorize}
+  authorizeExternalEndpoint: ${AUTHORIZE_EXTERNAL_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-authorize}
+  logoutEndpoint: ${LOGOUT_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-session/logout}
+  tokenEndpoint: ${TOKEN_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-token}
 
   ssl:
-    key-store: ./certs/example.client.p12
-    key-store-password: Password1
-    trust-store: ./certs/example.ca.p12
-    trust-store-password: Password1
+    key-store: ${CLIENT_CERT_P12_PATH:./certs/example.client.p12}
+    key-store-password: ${CLIENT_CERT_P12_PASSWORD:Password1}
+    trust-store: ${CA_CERT_P12_PATH:./certs/example.ca.p12}
+    trust-store-password: ${CA_CERT_P12_PASSWORD:Password1}
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   ssl:
-    key-store: ./certs/example.server.p12
-    key-store-password: 'Password1'
+    key-store: ${SERVER_CERT_P12_PATH:./certs/example.server.p12}
+    key-store-password: ${SERVER_CERT_P12_PASSWORD:Password1}

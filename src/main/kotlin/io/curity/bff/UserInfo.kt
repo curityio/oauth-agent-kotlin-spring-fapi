@@ -22,10 +22,8 @@ class UserInfo(private val cookieEncrypter: CookieEncrypter, private val objectM
             throw InvalidBFFCookieException("Unable to decrypt the ID cookie to get user info", exception)
         }
 
-        // TODO this should properly verify id token
-        // TODO - what to do when id token is expired or missing? Call userinfo endpoint? It may have different data than the id token
+        // We could verify the ID token, though it is received over a trusted POST to the token endpoint
         val tokenParts = idToken.split(".")
-
         if (tokenParts.size != 3)
         {
             throw InvalidIDTokenException()

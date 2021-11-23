@@ -138,6 +138,8 @@ class AuthorizationServerClient(
 
     suspend fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String): String
     {
+        println("*** DEBUG")
+        println(config.redirectUri)
         var body =
             "client_id=${config.clientID}&state=${state}&response_mode=jwt&response_type=code&redirect_uri=${config.redirectUri}&code_challenge=${codeVerifier.hash()}&code_challenge_method=S256"
 
@@ -154,7 +156,7 @@ class AuthorizationServerClient(
                 .bodyValue(body)
                 .awaitExchange { response -> handleAuthorizationServerResponse<PARResponse>(response, "PAR") }
 
-            return "${config.authorizeEndpointExternal}?client_id=${config.clientID}&request_uri=${parResponse.requestUri}"
+            return "${config.authorizeExternalEndpoint}?client_id=${config.clientID}&request_uri=${parResponse.requestUri}"
         } catch (exception: WebClientRequestException)
         {
             throw AuthorizationServerException("Exception encountered when calling authorization server", exception)
