@@ -4,7 +4,7 @@ bff:
   postLogoutRedirectURI: ${POST_LOGOUT_REDIRECT_URI:https://www.example.local/}
   scope: ${SCOPE:openid profile}
 
-  encKey: ${ENCRYPTION_KEY:NF65meV>Ls#8GP>;!Cnov)rIPRoK^.NP}
+  encKey: ${COOKIE_ENCRYPTION_KEY:NF65meV>Ls#8GP>;!Cnov)rIPRoK^.NP}
   salt: 'NF62meS>Ls%83P>;!Cdfv)rHTRoK!F)P'
   cookieNamePrefix: ${COOKIE_NAME_PREFIX:example}
   bffEndpointsPrefix: 'tokenhandler'
