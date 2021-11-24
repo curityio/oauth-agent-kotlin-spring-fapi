@@ -27,8 +27,7 @@ bff:
   ssl:
     key-store: ${CLIENT_CERT_P12_PATH:./certs/example.client.p12}
     key-store-password: ${CLIENT_CERT_P12_PASSWORD:Password1}
-    trust-store: ${CA_CERT_P12_PATH:./certs/example.ca.p12}
-    trust-store-password: ${CA_CERT_P12_PASSWORD:Password1}
+    trust-store: ${CA_CERT_P12_PATH:./certs/example.ca.pem}
 
 server:
   port: ${PORT:8080}
