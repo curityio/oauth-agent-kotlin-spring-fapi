@@ -11,7 +11,7 @@ Ensure that these tools are installed locally:
 - [jq](https://stedolan.github.io/jq/download/)
 - [OpenSSL](https://www.openssl.org/source/)
 
-Also get a license file for the Curity Identity Server with support for financial-grade features.
+Get a trial license file from Curity with support for financial-grade features.
 
 ## Update your Hosts File
 
@@ -28,8 +28,8 @@ For local development of the token handler the following URLs are used:
 
 | Component | Base URL | Usage |
 | --------- | -------- | ----- |
-| Token Handler API | https://api.example.local:8080/tokenhandler | This acts as a Back End for Front End for SPAs |
-| Curity Identity Server | https://login.example.local:8443 | This will receive a Mutual TLS secret from the token handler | 
+| Token Handler API | https://api.example.local:8080/tokenhandler | This will act as a Back End for Front End for SPAs |
+| Curity Identity Server | https://login.example.local:8443 | This will receive a Mutual TLS client credential from the token handler | 
 
 ## Generate Certificates
 
@@ -72,7 +72,7 @@ curl --cacert ./certs/example.ca.pem -X POST https://api.example.local:8080/toke
 
 ## Deploy the Curity Identity Server
 
-Copy a license file into the `test/idsvr` folder and then run the following commands:
+Copy the license file into the `test/idsvr` folder and then run the following commands:
 
 ```bash
 cd test/idsvr
