@@ -36,7 +36,7 @@ This enables a test driven approach to developing the token handler, without the
 
 See the below article for details on how to run the end-to-end solution in a browser:
 
-- [Financial Grade SPA Code Example](https://curity.io/resources/learn/financial-grade-spa-example/)
+- [Financial Grade SPA Code Example](https://curity.io/resources/learn/token-handler-spa-example/)
 
 ## Website Documentation
 
