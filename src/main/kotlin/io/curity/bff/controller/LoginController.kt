@@ -33,14 +33,14 @@ class LoginController(
 )
 {
     @PostMapping("/start")
-    suspend fun startLogin(request: ServerHttpRequest, response: ServerHttpResponse): StartAuthorizationResponse
+    suspend fun startLogin(@RequestBody(required = false) body: StartLoginRequest?, request: ServerHttpRequest, response: ServerHttpResponse): StartAuthorizationResponse
     {
         requestValidator.validateServletRequest(
             request,
             ValidateRequestOptions(requireCsrfHeader = false)
         )
 
-        val authorizationRequestData = getAuthorizationURL()
+        val authorizationRequestData = getAuthorizationURL(body)
 
         val encryptedCookieValue =
             cookieEncrypter.getEncryptedCookie(cookieName.tempLoginData, authorizationRequestData.toJSONString())
@@ -109,12 +109,12 @@ class LoginController(
         )
     }
 
-    private suspend fun getAuthorizationURL(): AuthorizationRequestData
+    private suspend fun getAuthorizationURL(loginRequest: StartLoginRequest?): AuthorizationRequestData
     {
         val codeVerifier = generateRandomString()
         val state = generateRandomString()
 
-        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier)
+        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier, loginRequest?.additionalScope)
 
         return AuthorizationRequestData(
             authorizationRequestUrl,
@@ -169,3 +169,5 @@ class EndAuthorizationResponse(
 class EndAuthorizationRequest(
     val pageUrl: String?
 )
+
+class StartLoginRequest(val additionalScope: String?)

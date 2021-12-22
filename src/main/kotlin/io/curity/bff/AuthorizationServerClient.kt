@@ -136,16 +136,17 @@ class AuthorizationServerClient(
         return cookiesList
     }
 
-    suspend fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String): String
+    suspend fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String, additionalScope: String?): String
     {
         println("*** DEBUG")
         println(config.redirectUri)
         var body =
             "client_id=${config.clientID}&state=${state}&response_mode=jwt&response_type=code&redirect_uri=${config.redirectUri}&code_challenge=${codeVerifier.hash()}&code_challenge_method=S256"
 
-        if (config.scope != null)
-        {
-            body += "&scope=${config.scope}"
+        val scope = "${config.scope} $additionalScope".trim()
+
+        if (scope.isNotEmpty()) {
+            body += "&scope=$scope"
         }
 
         try
