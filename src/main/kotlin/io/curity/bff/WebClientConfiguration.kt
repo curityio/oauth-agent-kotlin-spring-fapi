@@ -4,7 +4,9 @@ import io.netty.handler.ssl.SslContextBuilder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.ClassPathResource
 import org.springframework.http.client.reactive.ReactorClientHttpConnector
+import org.springframework.util.ResourceUtils
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import java.io.FileInputStream
@@ -49,22 +51,28 @@ class WebClientConfiguration
 
     private fun createKeyStore(keyStoreLocation: String, keyStorePassword: String): KeyStore
     {
-        FileInputStream(keyStoreLocation).use { fis ->
-            val ks = KeyStore.getInstance(KeyStore.getDefaultType())
-            ks.load(fis, keyStorePassword.toCharArray())
-            return ks
+        val keyStoreURL = ResourceUtils.getURL(keyStoreLocation)
+        val ks = KeyStore.getInstance(KeyStore.getDefaultType())
+
+        keyStoreURL.openStream().use {
+            ks.load(it, keyStorePassword.toCharArray())
         }
+
+        return ks
     }
 
     private fun createTrustStore(trustStoreLocation: String): KeyStore
     {
+        val trustStoreURL = ResourceUtils.getURL(trustStoreLocation)
         val factory = CertificateFactory.getInstance("X.509")
-        FileInputStream(trustStoreLocation).use { fis ->
-            val cert = factory.generateCertificate(fis) as X509Certificate
-            val ks = KeyStore.getInstance(KeyStore.getDefaultType())
-            ks.load(null, null)
+        val ks = KeyStore.getInstance(KeyStore.getDefaultType())
+        ks.load(null, null)
+
+        trustStoreURL.openStream().use {
+            val cert = factory.generateCertificate(it) as X509Certificate
             ks.setCertificateEntry("development-root-ca", cert)
-            return ks
         }
+
+        return ks
     }
 }

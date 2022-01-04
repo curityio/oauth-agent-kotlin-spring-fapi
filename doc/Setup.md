@@ -1,6 +1,7 @@
 # How to Run the Financial-grade Token Handler Locally
 
-Follow the below steps to get set up for developing and testing the token handler itself.
+Follow the below steps to get set up for developing and testing the token handler itself. This instruction will show you \
+how to set up the Token Handler together with an instance of the Curity Identity Server used as the Authorization Server.
 
 ## Prerequisites
 

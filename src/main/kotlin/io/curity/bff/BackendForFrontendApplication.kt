@@ -52,6 +52,9 @@ class BackendForFrontendApplication
             )
             .build()
     }
+
+    @Bean
+    fun oauthParametersProvider(): OAuthParametersProvider = OAuthParametersProviderImpl()
 }
 
 fun main(args: Array<String>)
