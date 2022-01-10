@@ -4,6 +4,7 @@ import io.curity.bff.AuthorizationRequestData
 import io.curity.bff.AuthorizationServerClient
 import io.curity.bff.CookieEncrypter
 import io.curity.bff.CookieName
+import io.curity.bff.OAuthParametersProvider
 import io.curity.bff.RequestValidator
 import io.curity.bff.ValidateRequestOptions
 import io.curity.bff.exception.InvalidResponseJwtException
@@ -29,7 +30,8 @@ class LoginController(
     private val cookieEncrypter: CookieEncrypter,
     private val authorizationServerClient: AuthorizationServerClient,
     private val requestValidator: RequestValidator,
-    private val jwtConsumer: JwtConsumer
+    private val jwtConsumer: JwtConsumer,
+    private val oAuthParametersProvider: OAuthParametersProvider
 )
 {
     @PostMapping("/start")
@@ -111,8 +113,8 @@ class LoginController(
 
     private suspend fun getAuthorizationURL(): AuthorizationRequestData
     {
-        val codeVerifier = generateRandomString()
-        val state = generateRandomString()
+        val codeVerifier = oAuthParametersProvider.getCodeVerifier()
+        val state = oAuthParametersProvider.getState()
 
         val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier)
 

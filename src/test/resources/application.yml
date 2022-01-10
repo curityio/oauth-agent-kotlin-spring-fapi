@@ -1,0 +1,35 @@
+bff:
+  clientID: spa-client
+  redirectUri: https://www.example.com/
+  postLogoutRedirectURI: https://www.example.com/
+  scope: openid profile
+
+  encKey: NF65meV>Ls#8GP>;!Cnov)rIPRoK^.NP
+  salt: 'NF62meS>Ls%83P>;!Cdfv)rHTRoK!F)P'
+  cookieNamePrefix: example
+  bffEndpointsPrefix: 'tokenhandler'
+  cookieSerializeOptions:
+    httpOnly: true
+    sameSite: true
+    secure: true
+    domain: api.example.com
+    path: '/'
+
+  trustedWebOrigins:
+  - https://www.example.com
+  issuer: https://login.example.com/oauth
+  jwksUri: https://localhost:8443/oauth/jwks
+  authorizeEndpoint: https://localhost:8443/oauth/authorize
+  authorizeExternalEndpoint: https://login.example.com/oauth/authorize
+  logoutEndpoint: https://login.example.com/oauth/logout
+  tokenEndpoint: https://localhost:8443/oauth/token
+
+  ssl:
+    key-store: classpath:certs/example.client.test.p12
+    key-store-password: Password1
+    trust-store: classpath:certs/example.ca.test.pem
+
+server:
+  ssl:
+    key-store: classpath:certs/example.server.test.p12
+    key-store-password: Password1

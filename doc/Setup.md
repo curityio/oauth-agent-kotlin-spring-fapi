@@ -1,6 +1,11 @@
 # How to Run the Financial-grade Token Handler Locally
 
-Follow the below steps to get set up for developing and testing the token handler itself.
+Follow the below steps to get set up for developing and testing the token handler itself. This instruction will show you \
+how to set up the Token Handler together with an instance of the Curity Identity Server used as the Authorization Server.
+
+If you don't want to set up an environment with the Authorization Server, you can run the Spock integration tests with \
+the `./gradlew test` command. Integration tests use Wiremock to mock responses from the Curity Identity Server and do not \
+need any external dependencies.
 
 ## Prerequisites
 

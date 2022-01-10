@@ -138,8 +138,6 @@ class AuthorizationServerClient(
 
     suspend fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String): String
     {
-        println("*** DEBUG")
-        println(config.redirectUri)
         var body =
             "client_id=${config.clientID}&state=${state}&response_mode=jwt&response_type=code&redirect_uri=${config.redirectUri}&code_challenge=${codeVerifier.hash()}&code_challenge_method=S256"
 

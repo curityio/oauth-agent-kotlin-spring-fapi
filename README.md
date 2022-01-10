@@ -29,8 +29,11 @@ For further details see the [Architecture](/doc/Architecture.md) article.
 
 ## Token Handler Development
 
-See the [Setup](/doc/Setup.md) article for details on productive token handler development.\
-This enables a test driven approach to developing the token handler, without the need for a browser.
+Use `./gradlew test` command to run a suite of integration tests, that can help you during development.
+
+See the [Setup](/doc/Setup.md) article for details on setting up a token handler development environment with an \
+instance of the Curity Identity Server. This enables a test driven approach to developing the token handler, without \
+the need for a browser.
 
 ## End-to-End SPA Flow
 
