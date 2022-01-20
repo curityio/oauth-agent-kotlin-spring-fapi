@@ -25,7 +25,6 @@ data class BFFConfigurationProperties(
     var cookieSerializeOptions: CookieSerializeOptions,
     var bffEndpointsPrefix: String,
     var encKey: String,
-    var salt: String,
     var cookieNamePrefix: String,
     var trustedWebOrigins: List<String>
 )
@@ -60,7 +59,6 @@ class BFFConfiguration(configurationProperties: BFFConfigurationProperties)
     val cookieSerializeOptions = configurationProperties.cookieSerializeOptions
     val bffEndpointsPrefix = configurationProperties.bffEndpointsPrefix
     val encKey = configurationProperties.encKey
-    val salt = configurationProperties.salt
     val cookieNamePrefix = configurationProperties.cookieNamePrefix
     val trustedWebOrigins = configurationProperties.trustedWebOrigins
 }
