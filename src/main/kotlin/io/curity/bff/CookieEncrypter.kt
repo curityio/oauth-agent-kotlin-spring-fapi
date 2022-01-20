@@ -50,7 +50,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
 
         val version = allBytes[0].toInt()
         if (version != CURRENT_VERSION) {
-            throw RuntimeException("The received cookie has invalid version")
+            throw RuntimeException("The received cookie has invalid format")
         }
 
         var offset = VERSION_SIZE
