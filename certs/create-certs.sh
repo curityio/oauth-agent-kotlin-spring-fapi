@@ -148,4 +148,4 @@ echo '*** Successfully exported root CA to a PKCS#12 file'
 #
 rm example.server.csr
 rm example.client.csr
-rm example.srl
+rm example.ca.srl
