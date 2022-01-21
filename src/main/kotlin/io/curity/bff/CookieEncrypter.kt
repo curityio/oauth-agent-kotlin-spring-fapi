@@ -1,8 +1,11 @@
 package io.curity.bff
 
+import io.curity.bff.exception.CookieDecryptionException
+import io.curity.bff.exception.InvalidBFFCookieException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
+import java.lang.RuntimeException
 import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
@@ -55,26 +58,31 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
 
                 val minSize = VERSION_SIZE + GCM_IV_SIZE + 1 + GCM_TAG_SIZE
                 if (allBytes.size < minSize) {
-                    throw RuntimeException("The received cookie has an invalid length")
+                    throw InvalidBFFCookieException("The received cookie has an invalid length")
                 }
 
                 val version = allBytes[0].toInt()
                 if (version != CURRENT_VERSION) {
-                    throw RuntimeException("The received cookie has invalid format")
+                    throw InvalidBFFCookieException("The received cookie has invalid format")
                 }
 
                 var offset = VERSION_SIZE
-                val ivBytes = Arrays.copyOfRange(allBytes, offset, offset + GCM_IV_SIZE)
+                val ivBytes = allBytes.copyOfRange(offset, offset + GCM_IV_SIZE)
 
-                offset = VERSION_SIZE + GCM_IV_SIZE
+                offset += GCM_IV_SIZE
                 val ciphertextBytes = Arrays.copyOfRange(allBytes, offset, allBytes.size)
 
                 val parameterSpec = GCMParameterSpec(GCM_TAG_SIZE * 8, ivBytes)
 
-                val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-                cipher.init(Cipher.DECRYPT_MODE, encryptionKey, parameterSpec)
-                val decryptedBytes = cipher.doFinal(ciphertextBytes)
-                return@withContext String(decryptedBytes)
+                try {
+                    val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+                    cipher.init(Cipher.DECRYPT_MODE, encryptionKey, parameterSpec)
+                    val decryptedBytes = cipher.doFinal(ciphertextBytes)
+                    return@withContext String(decryptedBytes)
+
+                } catch (e: RuntimeException) {
+                    throw CookieDecryptionException(e)
+                }
             }
         }
     }

@@ -2,10 +2,10 @@ package io.curity.bff.exception
 
 
 class InvalidBFFCookieException(logMessage: String, cause: Throwable?) : BFFException(
-    "The session is invalid or expired",
-    cause,
+    "Access denied due to invalid request details",
+    null,
     401,
-    "session_expired",
+    "unauthorized_request",
     logMessage
 )
 {
