@@ -1,5 +1,7 @@
 package io.curity.bff
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 import java.security.SecureRandom
 import java.time.Duration
@@ -26,45 +28,55 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
 
     suspend fun encryptValue(plaintext: String): String
     {
-        val ivBytes = ByteArray(GCM_IV_SIZE)
-        SecureRandom().nextBytes(ivBytes)
-        val parameterSpec = GCMParameterSpec(GCM_TAG_SIZE * 8, ivBytes)
+        return withContext(Dispatchers.Default) {
+            kotlin.run {
 
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.ENCRYPT_MODE, encryptionKey, parameterSpec)
+                val ivBytes = ByteArray(GCM_IV_SIZE)
+                SecureRandom().nextBytes(ivBytes)
+                val parameterSpec = GCMParameterSpec(GCM_TAG_SIZE * 8, ivBytes)
 
-        val cipherTextBytes = cipher.doFinal(plaintext.toByteArray())
+                val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+                cipher.init(Cipher.ENCRYPT_MODE, encryptionKey, parameterSpec)
 
-        val allBytes = byteArrayOf(CURRENT_VERSION.toByte()) + ivBytes + cipherTextBytes
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(allBytes)
+                val cipherTextBytes = cipher.doFinal(plaintext.toByteArray())
+                val allBytes = byteArrayOf(CURRENT_VERSION.toByte()) + ivBytes + cipherTextBytes
+
+                return@withContext Base64.getUrlEncoder().withoutPadding().encodeToString(allBytes)
+            }
+        }
     }
 
     suspend fun decryptValueFromCookie(cookieValue: String): String
     {
-        val allBytes = Base64.getUrlDecoder().decode(cookieValue);
+        return withContext(Dispatchers.Default) {
+            kotlin.run {
 
-        val minSize = VERSION_SIZE + GCM_IV_SIZE + 1 + GCM_TAG_SIZE
-        if (allBytes.size < minSize) {
-            throw RuntimeException("The received cookie has an invalid length")
+                val allBytes = Base64.getUrlDecoder().decode(cookieValue);
+
+                val minSize = VERSION_SIZE + GCM_IV_SIZE + 1 + GCM_TAG_SIZE
+                if (allBytes.size < minSize) {
+                    throw RuntimeException("The received cookie has an invalid length")
+                }
+
+                val version = allBytes[0].toInt()
+                if (version != CURRENT_VERSION) {
+                    throw RuntimeException("The received cookie has invalid format")
+                }
+
+                var offset = VERSION_SIZE
+                val ivBytes = Arrays.copyOfRange(allBytes, offset, offset + GCM_IV_SIZE)
+
+                offset = VERSION_SIZE + GCM_IV_SIZE
+                val ciphertextBytes = Arrays.copyOfRange(allBytes, offset, allBytes.size)
+
+                val parameterSpec = GCMParameterSpec(GCM_TAG_SIZE * 8, ivBytes)
+
+                val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+                cipher.init(Cipher.DECRYPT_MODE, encryptionKey, parameterSpec)
+                val decryptedBytes = cipher.doFinal(ciphertextBytes)
+                return@withContext String(decryptedBytes)
+            }
         }
-
-        val version = allBytes[0].toInt()
-        if (version != CURRENT_VERSION) {
-            throw RuntimeException("The received cookie has invalid format")
-        }
-
-        var offset = VERSION_SIZE
-        val ivBytes = Arrays.copyOfRange(allBytes, offset, offset + GCM_IV_SIZE)
-
-        offset = VERSION_SIZE + GCM_IV_SIZE
-        val ciphertextBytes = Arrays.copyOfRange(allBytes, offset, allBytes.size)
-
-        val parameterSpec = GCMParameterSpec(GCM_TAG_SIZE * 8, ivBytes)
-
-        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-        cipher.init(Cipher.DECRYPT_MODE, encryptionKey, parameterSpec)
-        val decryptedBytes = cipher.doFinal(ciphertextBytes)
-        return String(decryptedBytes)
     }
 
     fun String.decodeHex(): ByteArray
