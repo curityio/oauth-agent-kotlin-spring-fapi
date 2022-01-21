@@ -36,7 +36,7 @@ class UserinfoControllerSpec extends TokenHandlerSpecification {
         def response = thrown HttpClientErrorException
         response.statusCode == UNAUTHORIZED
         def responseBody = json.parseText(response.responseBodyAsString)
-        responseBody["code"] == "session_expired"
+        responseBody["code"] == "unauthorized_request"
     }
 
     def "Requesting user info with valid cookies should return user data"() {

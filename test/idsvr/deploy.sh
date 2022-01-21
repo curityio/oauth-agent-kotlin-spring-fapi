@@ -57,7 +57,7 @@ fi
 #
 echo "Waiting for the Curity Identity Server ..."
 while [ "$(curl -k -s -o /dev/null -w ''%{http_code}'' -u "$ADMIN_USER:$ADMIN_PASSWORD" "$RESTCONF_BASE_URL?content=config")" != "200" ]; do
-  sleep 2s
+  sleep 2
 done
 
 #
