@@ -7,6 +7,7 @@ import io.curity.bff.CookieName
 import io.curity.bff.OAuthParametersProvider
 import io.curity.bff.RequestValidator
 import io.curity.bff.ValidateRequestOptions
+import io.curity.bff.exception.CookieDecryptionException
 import io.curity.bff.exception.InvalidResponseJwtException
 import io.curity.bff.generateRandomString
 import org.jose4j.jwt.consumer.InvalidJwtException
@@ -76,14 +77,23 @@ class LoginController(
             val tokenResponse =
                 authorizationServerClient.getTokens(tempLoginData, queryParams.code!!, queryParams.state!!)
 
-            // Avoid setting a new value if the user opens two browser tabs and signs in on both
+            
             val csrfCookie = request.getCookie(cookieName.csrf)
             csrfToken = if (csrfCookie == null)
             {
                 generateRandomString()
             } else
             {
-                cookieEncrypter.decryptValueFromCookie(csrfCookie)
+                try {
+                    // Avoid setting a new value if the user opens two browser tabs and signs in on both
+                    cookieEncrypter.decryptValueFromCookie(csrfCookie)
+
+                } catch (exception: CookieDecryptionException) {
+
+                    // If the system has been redeployed with a new cookie encryption key, decrypting old cookies from the browser will fail
+                    // In this case generate a new CSRF token so that the SPA can complete its login without errors
+                    generateRandomString()
+                }
             }
 
             // Write the SameSite cookies
