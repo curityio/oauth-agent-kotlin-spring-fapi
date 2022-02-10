@@ -5,8 +5,8 @@ import io.curity.bff.exception.InvalidBFFCookieException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
-import java.lang.RuntimeException
 import java.security.SecureRandom
+import java.security.GeneralSecurityException
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
@@ -80,7 +80,7 @@ class CookieEncrypter(private val config: BFFConfiguration, private val cookieNa
                     val decryptedBytes = cipher.doFinal(ciphertextBytes)
                     return@withContext String(decryptedBytes)
 
-                } catch (e: RuntimeException) {
+                } catch (e: GeneralSecurityException) {
                     throw CookieDecryptionException(e)
                 }
             }
