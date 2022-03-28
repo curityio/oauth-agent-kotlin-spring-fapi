@@ -4,7 +4,7 @@
 # Basic automation to get tokens from the Authorization Server
 ##############################################################
 
-BFF_API_BASE_URL='https://api.example.local:8080/tokenhandler'
+BFF_API_BASE_URL='https://api.example.local:8080/oauth-agent'
 WEB_BASE_URL='https://www.example.local'
 AUTHORIZATION_SERVER_BASE_URL='https://login.example.local:8443'
 RESPONSE_FILE=data/response.txt

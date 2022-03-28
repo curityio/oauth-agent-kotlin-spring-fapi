@@ -1,10 +1,10 @@
 #!/bin/bash
 
-##################################################################
-# Tests to run against token handler endpoints outside the browser
-##################################################################
+################################################################
+# Tests to run against OAuth Agent endpoints outside the browser
+################################################################
 
-BFF_API_BASE_URL='https://api.example.local:8080/tokenhandler'
+BFF_API_BASE_URL='https://api.example.local:8080/oauth-agent'
 WEB_BASE_URL='https://www.example.local'
 AUTHORIZATION_SERVER_BASE_URL='https://login.example.local:8443'
 RESPONSE_FILE=data/response.txt

@@ -1,11 +1,11 @@
-# A Java based Token Handler for Financial Grade SPAs
+# A Java based OAuth Agent for Financial Grade SPAs
 
 [![Quality](https://img.shields.io/badge/quality-experiment-red)](https://curity.io/resources/code-examples/status/)
 [![Availability](https://img.shields.io/badge/availability-source-blue)](https://curity.io/resources/code-examples/status/)
 
 ## Overview
 
-The token handler implements an API driven `Back End for Front End (BFF)` for Single Page Applications.\
+The OAuth Agent implements an API driven `Back End for Front End (BFF)` for Single Page Applications.\
 This implementation provides state-of-the-art security suitable for financial-grade:
 
 - Strongest browser security with only `SameSite=strict` cookies
@@ -22,17 +22,17 @@ The following endpoints are used so that the SPA uses simple one liners to perfo
 | POST /login/start | Start a login by providing the request URL to the SPA and setting temporary cookies |
 | POST /login/end | Complete a login and issuing secure cookies for the SPA containing encrypted tokens |
 | GET /userInfo | Return Personally Identifiable Information (PII) for the SPA to display |
-| POST /refresh | Ask the token handler to refresh an access token and rewrite cookies |
-| POST /logout | Ask the token handler to clear cookies and return an end session request URL |
+| POST /refresh | Refresh an access token and rewrite cookies |
+| POST /logout | Clear cookies and return an end session request URL |
 
 For further details see the [Architecture](/doc/Architecture.md) article.
 
-## Token Handler Development
+## OAuth Agent Development
 
 Use `./gradlew test` command to run a suite of integration tests, that can help you during development.
 
-See the [Setup](/doc/Setup.md) article for details on setting up a token handler development environment with an \
-instance of the Curity Identity Server. This enables a test driven approach to developing the token handler, without \
+See the [Setup](/doc/Setup.md) article for details on setting up an OAuth Agent development environment with an \
+instance of the Curity Identity Server. This enables a test driven approach to developing the OAuth Agent, without \
 the need for a browser.
 
 ## End-to-End SPA Flow
