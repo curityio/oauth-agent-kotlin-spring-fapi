@@ -5,7 +5,7 @@
 
 ## Overview
 
-The OAuth Agent implements an API driven `Back End for Front End (BFF)` for Single Page Applications.\
+The OAuth Agent provides a modern API driven `Back End for Front End (BFF)` for Single Page Applications.\
 This implementation provides state-of-the-art security suitable for financial-grade:
 
 - Strongest browser security with only `SameSite=strict` cookies

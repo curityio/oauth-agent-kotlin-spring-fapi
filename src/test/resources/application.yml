@@ -1,4 +1,4 @@
-bff:
+oauthagent:
   clientID: spa-client
   redirectUri: https://www.example.com/
   postLogoutRedirectURI: https://www.example.com/
@@ -6,7 +6,7 @@ bff:
 
   encKey: 4e4636356d65563e4c73233847503e3b21436e6f7629724950526f4b5e2e4e50
   cookieNamePrefix: example
-  bffEndpointsPrefix: 'tokenhandler'
+  endpointsPrefix: 'tokenhandler'
   cookieSerializeOptions:
     httpOnly: true
     sameSite: true

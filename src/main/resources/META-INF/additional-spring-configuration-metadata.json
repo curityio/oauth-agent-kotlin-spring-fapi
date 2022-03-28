@@ -1,8 +1,8 @@
 {
   "properties": [
     {
-      "name": "bff.clientID",
+      "name": "oauthagent.clientID",
       "type": "java.lang.String",
-      "description": "Description for bff.clientID."
+      "description": "Description for oauthagent.clientID."
   }
 ] }
