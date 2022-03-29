@@ -314,7 +314,7 @@
               <client>
                 <id>spa-client</id>
                 <client-name>spa-client</client-name>
-                <description>Financial Grade SPA that uses a Token Handler API</description>
+                <description>SPA that uses a Financial Grade OAuth Agent</description>
                 <mutual-tls>
                   <client-dn>CN="financial-grade-spa, OU=Example, O=Curity AB, C=SE"</client-dn>
                   <trusted-ca>financial_grade_client_ca</trusted-ca>

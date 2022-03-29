@@ -2,7 +2,7 @@
 
 ##############################################################
 # Deploy the Curity Identity Server with the required settings
-# This enables the token handler API to be tested in isolation 
+# This enables the OAuth Agent to be tested in isolation
 ##############################################################
 
 RESTCONF_BASE_URL='https://localhost:6749/admin/api/restconf/data'

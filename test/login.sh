@@ -4,7 +4,7 @@
 # Basic automation to get tokens from the Authorization Server
 ##############################################################
 
-BFF_API_BASE_URL='https://api.example.local:8080/tokenhandler'
+OAUTH_AGENT_BASE_URL='https://api.example.local:8080/oauth-agent'
 WEB_BASE_URL='https://www.example.local'
 AUTHORIZATION_SERVER_BASE_URL='https://login.example.local:8443'
 RESPONSE_FILE=data/response.txt
@@ -49,7 +49,7 @@ mkdir -p data
 #
 # First get the authorization request URL
 #
-HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/start" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/login/start" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
@@ -124,7 +124,7 @@ echo $PAGE_URL_JSON | jq
 #
 # End the login by swapping the code for tokens
 #
-HTTP_STATUS=$(curl -k -i -s -X POST "$BFF_API_BASE_URL/login/end" \
+HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/login/end" \
 -H "origin: $WEB_BASE_URL" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \

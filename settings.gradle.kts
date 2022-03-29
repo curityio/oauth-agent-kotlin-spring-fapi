@@ -1,1 +1,1 @@
-rootProject.name = "backend-for-frontend"
+rootProject.name = "oauth-agent"
