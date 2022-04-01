@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service
 import java.util.Base64
 
 @Service
-class UserInfo(private val cookieEncrypter: CookieEncrypter, private val objectMapper: ObjectMapper)
+class IDTokenClaims(private val cookieEncrypter: CookieEncrypter, private val objectMapper: ObjectMapper)
 {
-    suspend fun getUserInfo(idTokenCookie: String): Map<String, Any>
+    suspend fun getClaims(idTokenCookie: String): Map<String, Any>
     {
         val idToken: String
 
@@ -19,10 +19,9 @@ class UserInfo(private val cookieEncrypter: CookieEncrypter, private val objectM
             idToken = cookieEncrypter.decryptValueFromCookie(idTokenCookie)
         } catch (exception: RuntimeException)
         {
-            throw InvalidCookieException("Unable to decrypt the ID cookie to get user info", exception)
+            throw InvalidCookieException("Unable to decrypt the ID cookie to get claims", exception)
         }
 
-        // We could verify the ID token, though it is received over a trusted POST to the token endpoint
         val tokenParts = idToken.split(".")
         if (tokenParts.size != 3)
         {
@@ -31,7 +30,7 @@ class UserInfo(private val cookieEncrypter: CookieEncrypter, private val objectM
 
         try
         {
-            return objectMapper.readValue(Base64.getDecoder().decode(tokenParts[1]), UserInfoType())
+            return objectMapper.readValue(Base64.getDecoder().decode(tokenParts[1]), IDTokenType())
         } catch (exception: RuntimeException)
         {
             throw InvalidIDTokenException(exception)
@@ -39,4 +38,4 @@ class UserInfo(private val cookieEncrypter: CookieEncrypter, private val objectM
     }
 }
 
-class UserInfoType : TypeReference<Map<String, Any>>()
+class IDTokenType : TypeReference<Map<String, Any>>()

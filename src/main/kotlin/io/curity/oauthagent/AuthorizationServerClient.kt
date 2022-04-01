@@ -25,7 +25,7 @@ class AuthorizationServerClient(
     private val cookieName: CookieName
 )
 {
-    private val idTokenOptions = config.cookieSerializeOptions.copy(path = "/${config.endpointsPrefix}/userInfo")
+    private val idTokenOptions = config.cookieSerializeOptions.copy(path = "/${config.endpointsPrefix}/claims")
     private val refreshTokenOptions = config.cookieSerializeOptions.copy(path = "/${config.endpointsPrefix}/refresh")
 
     suspend fun getTokens(tempLoginData: String?, code: String, state: String): TokenResponse
@@ -82,6 +82,22 @@ class AuthorizationServerClient(
         return response.awaitBody()
     }
 
+    suspend fun getUserInfo(accessToken: String): Map<String, Any>
+    {
+        try
+        {
+            return client.post()
+                .uri(config.userInfoEndpoint)
+                .header("Authorization", "Bearer $accessToken")
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .awaitExchange { response -> handleAuthorizationServerResponse(response, "User Info Download") }
+
+        } catch (exception: WebClientRequestException)
+        {
+            throw AuthorizationServerException("Connectivity problem during a User Info request", exception)
+        }
+    }
+
     suspend fun refreshAccessToken(refreshToken: String): TokenResponse
     {
         try
@@ -120,12 +136,7 @@ class AuthorizationServerClient(
         if (response.refreshToken != null)
         {
             cookiesList.add(
-                cookieEncrypter.getEncryptedCookie(
-                    cookieName.auth,
-                    response.refreshToken,
-                    refreshTokenOptions
-                )
-            )
+                cookieEncrypter.getEncryptedCookie(cookieName.auth, response.refreshToken, refreshTokenOptions))
         }
 
         if (response.idToken != null)

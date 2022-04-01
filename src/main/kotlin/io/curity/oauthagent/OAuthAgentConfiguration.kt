@@ -8,25 +8,30 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties(prefix = "oauthagent")
 @ConstructorBinding
 data class OAuthAgentConfigurationProperties(
+
+    // Host settings
+    var endpointsPrefix: String,
+
+    // Client settings
     var clientID: String = "",
     var redirectUri: String,
     var postLogoutRedirectURI: String?,
     var scope: String?,
 
-    // Authorization Server Configuration
+    // Authorization Server settings
     var issuer: String,
     var jwksUri: String,
     var logoutEndpoint: String,
     var authorizeEndpoint: String,
     var authorizeExternalEndpoint: String,
     var tokenEndpoint: String,
+    var userInfoEndpoint: String,
 
-    // Secure cookie and CORS configuration
-    var cookieSerializeOptions: CookieSerializeOptions,
-    var endpointsPrefix: String,
-    var encKey: String,
+    // Secure cookie and CORS settings
     var cookieNamePrefix: String,
-    var trustedWebOrigins: List<String>
+    var encKey: String,
+    var trustedWebOrigins: List<String>,
+    var cookieSerializeOptions: CookieSerializeOptions
 )
 
 data class CookieSerializeOptions(
@@ -42,23 +47,27 @@ data class CookieSerializeOptions(
 @EnableConfigurationProperties(OAuthAgentConfigurationProperties::class)
 class OAuthAgentConfiguration(configurationProperties: OAuthAgentConfigurationProperties)
 {
+    // Host settings
+    val endpointsPrefix = configurationProperties.endpointsPrefix
+
+    // Client settings
     val clientID = configurationProperties.clientID
     val redirectUri = configurationProperties.redirectUri
     val postLogoutRedirectURI = configurationProperties.postLogoutRedirectURI
     val scope = configurationProperties.scope
 
-    // Authorization Server Configuration
+    // Authorization Server settings
     val issuer = configurationProperties.issuer
     val jwksUri = configurationProperties.jwksUri
     val logoutEndpoint = configurationProperties.logoutEndpoint
     val authorizeEndpoint = configurationProperties.authorizeEndpoint
     val authorizeExternalEndpoint = configurationProperties.authorizeExternalEndpoint
     val tokenEndpoint = configurationProperties.tokenEndpoint
+    val userInfoEndpoint = configurationProperties.userInfoEndpoint
 
     // Secure cookie and CORS configuration
-    val cookieSerializeOptions = configurationProperties.cookieSerializeOptions
-    val endpointsPrefix = configurationProperties.endpointsPrefix
-    val encKey = configurationProperties.encKey
     val cookieNamePrefix = configurationProperties.cookieNamePrefix
+    val encKey = configurationProperties.encKey
     val trustedWebOrigins = configurationProperties.trustedWebOrigins
+    val cookieSerializeOptions = configurationProperties.cookieSerializeOptions
 }

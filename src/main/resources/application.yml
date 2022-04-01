@@ -22,6 +22,7 @@ oauthagent:
   authorizeExternalEndpoint: ${AUTHORIZE_EXTERNAL_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-authorize}
   logoutEndpoint: ${LOGOUT_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-session/logout}
   tokenEndpoint: ${TOKEN_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-token}
+  userInfoEndpoint: ${TOKEN_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-userinfo}
 
   ssl:
     key-store: ${CLIENT_CERT_P12_PATH:./certs/example.client.p12}

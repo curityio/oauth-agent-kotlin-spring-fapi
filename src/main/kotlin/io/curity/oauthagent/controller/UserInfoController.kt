@@ -1,9 +1,6 @@
 package io.curity.oauthagent.controller
 
-import io.curity.oauthagent.CookieName
-import io.curity.oauthagent.RequestValidator
-import io.curity.oauthagent.UserInfo
-import io.curity.oauthagent.ValidateRequestOptions
+import io.curity.oauthagent.*
 import io.curity.oauthagent.exception.InvalidCookieException
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,8 +11,9 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/\${oauthagent.endpointsPrefix}/userInfo")
 class UserInfoController(
     private val requestValidator: RequestValidator,
-    private val userInfo: UserInfo,
-    private val cookieName: CookieName
+    private val cookieEncrypter: CookieEncrypter,
+    private val cookieName: CookieName,
+    private val authorizationServerClient: AuthorizationServerClient
 )
 {
     @GetMapping("", produces = ["application/json"])
@@ -26,9 +24,9 @@ class UserInfoController(
             ValidateRequestOptions(requireCsrfHeader = false)
         )
 
-        val idTokenCookie = request.cookies[cookieName.idToken]?.first()?.value
-            ?: throw InvalidCookieException("No ID cookie was supplied in a call to get user info")
-
-        return userInfo.getUserInfo(idTokenCookie)
+        val accessTokenCookie = request.cookies[cookieName.accessToken]?.first()?.value
+            ?: throw InvalidCookieException("No access token cookie was supplied in a call to get user info")
+        val decryptedToken = cookieEncrypter.decryptValueFromCookie(accessTokenCookie)
+        return authorizationServerClient.getUserInfo(decryptedToken)
     }
 }
