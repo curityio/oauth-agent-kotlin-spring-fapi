@@ -80,6 +80,19 @@ class IdsvrStubs {
         (new URI(configuration.tokenEndpoint)).path
     }
 
+    def getUserInfoEndpointPath() {
+        (new URI(configuration.userInfoEndpoint)).path
+    }
+
+    def idsvrRespondsWithUserInfo() {
+        stubFor(post(getUserInfoEndpointPath())
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(toJson([sub: "user@example.com", username: "user"]))
+                ))
+    }
+
     private def getIDToken() {
         def claims = new JwtClaims()
         claims.setIssuer(configuration.issuer)
@@ -88,7 +101,7 @@ class IdsvrStubs {
         claims.setGeneratedJwtId()
         claims.setIssuedAtToNow()
         claims.setClaim("sub","user@example.com")
-        claims.setClaim("username", "user")
+        claims.setClaim("auth_time", 1626259937)
 
         def jws = new JsonWebSignature()
         jws.setPayload(claims.toJson())
