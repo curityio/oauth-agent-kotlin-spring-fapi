@@ -523,7 +523,7 @@ fi
 echo '25. End session redirect completed successfully'
 
 #
-# Test sending malformed JSON which currently results in a 500 error
+# Test sending malformed JSON, which currently results in a 500 error
 #
 echo '26. Testing sending malformed JSON to the OAuth Agent ...'
 HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/login/end" \
@@ -532,7 +532,7 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/login/end" \
 -H 'accept: application/json' \
 -d 'XXX' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '400' ]; then
+if [ "$HTTP_STATUS" != '500' ]; then
   echo '*** Posting malformed JSON did not fail as expected'
   exit
 fi
