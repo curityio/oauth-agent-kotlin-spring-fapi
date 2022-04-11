@@ -47,12 +47,15 @@ class ExceptionController
         fields.add(request.path.toString())
         fields.add(exception.statusCode.toString())
         fields.add(exception.code)
-        if (exception.message != null) {
-            fields.add(exception.message!!)
+
+        exception.message?.apply {
+            fields.add(this)
         }
-        if (exception.logMessage != null) {
-            fields.add(exception.logMessage)
+
+        exception.logMessage?.apply {
+            fields.add(this)
         }
+
         if (exception.statusCode >= 500 && exception.stackTrace != null) {
 
             val writer = StringWriter()

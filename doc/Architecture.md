@@ -58,7 +58,7 @@ Endpoint which sends the access token to the user info endpoint, then returns da
 #### Example
 
 ```http
-GET https://api.example.com/oauth-agent
+GET https://api.example.com/oauth-agent/userInfo
 Cookie: example-at=2558e7806c0523fd96d105...
 ```
 

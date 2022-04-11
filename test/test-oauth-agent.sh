@@ -532,7 +532,7 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/login/end" \
 -H 'accept: application/json' \
 -d 'XXX' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '500' ]; then
+if [ "$HTTP_STATUS" != '400' ]; then
   echo '*** Posting malformed JSON did not fail as expected'
   exit
 fi
