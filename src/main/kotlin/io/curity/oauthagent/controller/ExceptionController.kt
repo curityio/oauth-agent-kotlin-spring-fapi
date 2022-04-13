@@ -3,12 +3,14 @@ package io.curity.oauthagent.controller
 import io.curity.oauthagent.exception.OAuthAgentException
 import io.curity.oauthagent.exception.UnhandledException
 import org.slf4j.LoggerFactory
+import org.springframework.core.codec.DecodingException
 import org.springframework.http.HttpStatus
 import org.springframework.http.server.reactive.ServerHttpRequest
 import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.server.ServerWebInputException
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.text.SimpleDateFormat
