@@ -9,12 +9,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseBody
-import java.io.PrintWriter
-import java.io.StringWriter
-import java.text.SimpleDateFormat
 import java.util.ArrayList
-import java.util.Locale
-
 
 @ControllerAdvice
 class ExceptionController
@@ -39,36 +34,20 @@ class ExceptionController
      */
     private fun logError(exception: OAuthAgentException, request: ServerHttpRequest) {
 
-        val formatter = SimpleDateFormat("MMM dd yyyy HH:mm:ss", Locale.getDefault())
-
         val fields = ArrayList<String>()
         fields.add(request.method.toString())
         fields.add(request.path.toString())
-        fields.add(exception.statusCode.toString())
-        fields.add(exception.code)
-
-        exception.message?.apply {
-            fields.add(this)
-        }
-
-        exception.logMessage?.apply {
-            fields.add(this)
-        }
-
-        if (exception.statusCode >= 500 && exception.stackTrace != null) {
-
-            val writer = StringWriter()
-            writer.use { sw ->
-                val pw = PrintWriter(sw)
-                exception.printStackTrace(pw)
-                fields.add(sw.toString())
-            }
-        }
+        fields.addAll(exception.getLogFields())
 
         if (exception.statusCode >= 500) {
-            logger.error(fields.joinToString())
+            if (logger.isErrorEnabled) {
+                logger.error(fields.joinToString())
+            }
+
         } else {
-            logger.info(fields.joinToString())
+            if (logger.isInfoEnabled) {
+                logger.info(fields.joinToString())
+            }
         }
     }
 
