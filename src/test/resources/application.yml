@@ -6,7 +6,7 @@ oauthagent:
 
   encKey: 4e4636356d65563e4c73233847503e3b21436e6f7629724950526f4b5e2e4e50
   cookieNamePrefix: example
-  endpointsPrefix: 'tokenhandler'
+  endpointsPrefix: 'oauth-agent'
   cookieSerializeOptions:
     httpOnly: true
     sameSite: true
@@ -22,6 +22,7 @@ oauthagent:
   authorizeExternalEndpoint: https://login.example.com/oauth/authorize
   logoutEndpoint: https://login.example.com/oauth/logout
   tokenEndpoint: https://localhost:8443/oauth/token
+  userInfoEndpoint: https://localhost:8443/oauth/userinfo
 
   ssl:
     key-store: classpath:certs/example.client.test.p12

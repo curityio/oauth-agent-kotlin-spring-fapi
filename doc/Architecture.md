@@ -17,9 +17,10 @@ The OAuth Agent exposes the following endpoints:
 1. POST `/login/start`
 2. POST `/login/end`
 3. GET `/userInfo`
-4. POST `/logout`
+4. GET `/claims`
 5. POST `/refresh`
-
+6. POST `/logout`
+ 
 ### POST `/login/start`
 
 This endpoint is used to initialize an authorization request. The API responds with a URL which the SPA should navigate to in order to start the authorization flow at the Authorization Server. The URL returned is a PAR URL. However, the format of the URL is irrelevant to the SPA, it should just redirect the user to that URL.
@@ -52,12 +53,35 @@ The response will contain a few `Set-Cookie` headers.
 
 ### GET `/userInfo`
 
+Endpoint which sends the access token to the user info endpoint, then returns data.
+
+#### Example
+
+```http
+GET https://api.example.com/oauth-agent/userInfo
+Cookie: example-at=2558e7806c0523fd96d105...
+```
+
+Response
+
+```json
+{
+  "sub": "0abd0b16b309a3a034af8494aa0092aa42813e635f194c795df5006db90743e8",
+  "preferred_username": "demouser",
+  "given_name": "Demo",
+  "updated_at": 1627313147,
+  "family_name": "User"
+}
+```
+
+### GET `/claims`
+
 Endpoint which returns claims of the ID token contained in the session cookie.
 
 #### Example
 
 ```http
-GET https://api.example.com/oauth-agent
+GET https://api.example.com/oauth-agent/claims
 Cookie: example-id=2558e7806c0523fd96d105...
 ```
 
@@ -68,9 +92,9 @@ Response
   "exp":1626263589,
   "nbf":1626259989,
   "jti":"34e76304-0bc3-46ee-bc70-e21685eb5282",
-  "iss":"https://login.example.com/oauth",
+  "iss":"https://idsvr.example.com/oauth",
   "aud":"spa-client",
-  "sub":"user",
+  "sub":"0abd0b16b309a3a034af8494aa0092aa42813e635f194c795df5006db90743e8",
   "auth_time":1626259937,
   "iat":1626259989
 }

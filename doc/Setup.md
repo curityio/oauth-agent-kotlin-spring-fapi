@@ -3,10 +3,6 @@
 Follow the below steps to get set up for developing and testing the OAuth Agent itself. This instruction will show you \
 how to set up the OAuth Agent together with an instance of the Curity Identity Server used as the Authorization Server.
 
-If you don't want to set up an environment with the Authorization Server, you can run the Spock integration tests with \
-the `./gradlew test` command. Integration tests use Wiremock to mock responses from the Curity Identity Server and do not \
-need any external dependencies.
-
 ## Prerequisites
 
 Ensure that these tools are installed locally:
@@ -75,18 +71,27 @@ curl --cacert ./certs/example.ca.pem -X POST https://api.example.local:8080/oaut
 -H "origin: https://www.example.local" | jq
 ```
 
-## Deploy the Curity Identity Server
+## Run Integration Tests
 
-Copy the license file into the `test/idsvr` folder and then run the following commands:
+You can run Spock integration tests with the following command, which spin up an instance of the API.\
+Integration tests use Wiremock to mock responses from the Curity Identity Server and do not \
+need any external dependencies.
+
+```bash
+./gradlew test --rerun-tasks
+```
+
+## Run End-to-End Tests
+
+Run some tests that also use the Curity Identity Server.\
+First copy a license file into the `test/idsvr` folder and then run the following commands:
 
 ```bash
 cd test/idsvr
 ./deploy.sh
 ```
 
-## Test the OAuth Agent
-
-The test script can then be used to verify the OAuth Agent's operations using the curl tool:
+Then run a test script that uses curl requests to verify the OAuth Agent's operations:
 
 ```bash
 cd test

@@ -4,18 +4,16 @@ import org.springframework.http.HttpHeaders
 import org.springframework.web.client.HttpClientErrorException
 
 import static org.springframework.http.HttpMethod.GET
-import static org.springframework.http.HttpStatus.FORBIDDEN
-import static org.springframework.http.HttpStatus.OK
-import static org.springframework.http.HttpStatus.UNAUTHORIZED
+import static org.springframework.http.HttpStatus.*
 
-class UserinfoControllerSpec extends TokenHandlerSpecification {
+class ClaimsControllerSpec extends TokenHandlerSpecification {
 
-    static def userinfoURL
-    static def userinfoPath = "/userInfo"
+    static def claimsURL
+    static def claimsPath = "/claims"
 
-    def "Requesting user info from an untrusted origin should return a 403 response"() {
+    def "Requesting claims from an untrusted origin should return a 403 response"() {
         given:
-        def request = getRequestWithMaliciousOrigin(GET, userinfoURI)
+        def request = getRequestWithMaliciousOrigin(GET, claimsURI)
 
         when:
         client.exchange(request, String.class)
@@ -25,9 +23,9 @@ class UserinfoControllerSpec extends TokenHandlerSpecification {
         response.statusCode == FORBIDDEN
     }
 
-    def "Requesting user info without session cookies should return a 401 response"() {
+    def "Requesting claims without session cookies should return a 401 response"() {
         given:
-        def request = getRequestWithValidOrigin(GET, userinfoURI)
+        def request = getRequestWithValidOrigin(GET, claimsURI)
 
         when:
         client.exchange(request, String.class)
@@ -39,12 +37,11 @@ class UserinfoControllerSpec extends TokenHandlerSpecification {
         responseBody["code"] == "unauthorized_request"
     }
 
-    def "Requesting user info with valid cookies should return user data"() {
+    def "Requesting claims with valid cookies should return ID Token claims"() {
         given:
-        stubs.idsvrRespondsWithUserInfo()
         def cookieHeader = new HttpHeaders()
         cookieHeader.addAll("Cookie", cookiesAndCSRFForAuthenticatedUser.cookies)
-        def request = getRequestWithValidOrigin(GET, userinfoURI, null, cookieHeader)
+        def request = getRequestWithValidOrigin(GET, claimsURI, null, cookieHeader)
 
         when:
         def response = client.exchange(request, String.class)
@@ -53,13 +50,13 @@ class UserinfoControllerSpec extends TokenHandlerSpecification {
         response.statusCode == OK
         def responseBody = json.parseText(response.body)
         responseBody["sub"] == "user@example.com"
-        responseBody["username"] == "user"
+        responseBody["auth_time"] == 1626259937
     }
 
-    private def getUserinfoURI() {
-        if (userinfoURL == null) {
-            userinfoURL = new URI("$baseUrl:$port/${configuration.endpointsPrefix}$userinfoPath")
+    private def getClaimsURI() {
+        if (claimsURL == null) {
+            claimsURL = new URI("$baseUrl:$port/${configuration.endpointsPrefix}$claimsPath")
         }
-        userinfoURL
+        claimsURL
     }
 }
