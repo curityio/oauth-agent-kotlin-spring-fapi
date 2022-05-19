@@ -7,7 +7,7 @@ import static org.springframework.http.HttpStatus.*
 
 class ExtensibilitySpec extends TokenHandlerSpecification {
 
-    def "Starting a login request with a runtime OpenID Connect parameter succeeds"() {
+    def "Starting a login request with a simple OpenID Connect parameter should succeed"() {
         given:
 
         def options = [
@@ -34,7 +34,7 @@ class ExtensibilitySpec extends TokenHandlerSpecification {
         !authorizationRequestUrl.empty
     }
 
-    def "Starting a login request with the OpenID Connect claims parameter succeeds"() {
+    def "Starting a login request with multiple OpenID Connect parameters should succeed"() {
 
         def claims = [
                 "id_token": [
@@ -43,15 +43,13 @@ class ExtensibilitySpec extends TokenHandlerSpecification {
                                 "values": [
                                         "urn:se:curity:authentication:html-form:htmlform1"
                                 ]
-                        ],
-                        "my_custom_claim": [
-                                "essential": true,
                         ]
                 ]
         ]
 
         def options = [
                 "extraParams": [
+                        ["key": "ui_locates", "value": "fr"],
                         ["key": "claims", "value": toJson(claims)]
                 ]
         ]
