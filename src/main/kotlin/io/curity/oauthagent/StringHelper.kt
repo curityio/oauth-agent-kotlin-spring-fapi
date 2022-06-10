@@ -1,13 +1,13 @@
 package io.curity.oauthagent
 
 import java.net.URLEncoder
-import java.nio.charset.Charset
+import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.util.Base64
 
 fun String.encodeURI(): String
 {
-    return URLEncoder.encode(this, Charset.forName("UTF-8"))
+    return URLEncoder.encode(this, StandardCharsets.UTF_8.name())
 }
 
 fun String.hash(): String

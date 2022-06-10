@@ -150,6 +150,6 @@ class CookieEncrypter(private val config: OAuthAgentConfiguration, private val c
         const val GCM_TAG_SIZE = 16
         const val CURRENT_VERSION = 1
 
-        private val minusDayInSeconds = -Duration.ofDays(1).toSeconds().toInt()
+        private val minusDayInSeconds = -Duration.ofDays(1).seconds.toInt()
     }
 }

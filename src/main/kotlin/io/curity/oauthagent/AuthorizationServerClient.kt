@@ -2,7 +2,7 @@ package io.curity.oauthagent
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.curity.oauthagent.controller.StartAuthorizationRequest
+import io.curity.oauthagent.controller.StartAuthorizationParameters
 import io.curity.oauthagent.exception.AuthorizationServerException
 import io.curity.oauthagent.exception.InvalidRequestException
 import io.curity.oauthagent.exception.InvalidStateException
@@ -16,8 +16,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.awaitBody
 import org.springframework.web.reactive.function.client.awaitExchange
-import java.lang.RuntimeException
-import java.util.*
 
 @Service
 class AuthorizationServerClient(
@@ -150,7 +148,7 @@ class AuthorizationServerClient(
         return cookiesList
     }
 
-    suspend fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String, options: StartAuthorizationRequest?
+    suspend fun getAuthorizationRequestObjectUri(state: String, codeVerifier: String, parameters: StartAuthorizationParameters?
     ): String
     {
         var body =
@@ -161,7 +159,7 @@ class AuthorizationServerClient(
             body += "&scope=${config.scope}"
         }
 
-        options?.extraParams?.forEach {
+        parameters?.extraParams?.forEach {
             body += "&${it.key}=${it.value}"
         }
 

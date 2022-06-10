@@ -1,6 +1,5 @@
 package io.curity.oauthagent.controller
 
-import java.util.Optional
 import io.curity.oauthagent.*
 import io.curity.oauthagent.exception.CookieDecryptionException
 import io.curity.oauthagent.exception.InvalidResponseJwtException
@@ -32,7 +31,7 @@ class LoginController(
     suspend fun startLogin(
         request: ServerHttpRequest,
         response: ServerHttpResponse,
-        @RequestBody(required = false) body: StartAuthorizationRequest?
+        @RequestBody(required = false) body: StartAuthorizationParameters?
     ): StartAuthorizationResponse
     {
         requestValidator.validateServletRequest(
@@ -118,12 +117,12 @@ class LoginController(
         )
     }
 
-    private suspend fun getAuthorizationURL(options: StartAuthorizationRequest?): AuthorizationRequestData
+    private suspend fun getAuthorizationURL(parameters: StartAuthorizationParameters?): AuthorizationRequestData
     {
         val codeVerifier = oAuthParametersProvider.getCodeVerifier()
         val state = oAuthParametersProvider.getState()
 
-        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier, options)
+        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier, parameters)
 
         return AuthorizationRequestData(
             authorizationRequestUrl,
@@ -165,8 +164,8 @@ class LoginController(
 
 data class OAuthQueryParams(val code: String?, val state: String?)
 
-class StartAuthorizationRequest(
-    val extraParams: ArrayList<ExtraParams>?
+class StartAuthorizationParameters(
+    val extraParams: List<ExtraParams>?
 )
 
 class StartAuthorizationResponse(
