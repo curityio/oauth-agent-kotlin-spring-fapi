@@ -18,7 +18,8 @@ class ExtensibilitySpec extends TokenHandlerSpecification {
 
         def request = getRequestWithValidOrigin(POST, loginStartURI, toJson(options))
         stubFor(post(stubs.getPAREndpointPath())
-            .willReturn(aResponse()
+                .withRequestBody(containing("prompt=login"))
+                .willReturn(aResponse()
                 .withBody(toJson([request_uri: "parRequestURI", expires_in: 100]))
                 .withHeader("Content-Type", "application/json")
                 .withStatus(200)
@@ -46,16 +47,19 @@ class ExtensibilitySpec extends TokenHandlerSpecification {
                         ]
                 ]
         ]
+        def claimsJson = toJson(claims)
 
         def options = [
                 "extraParams": [
-                        ["key": "ui_locates", "value": "fr"],
-                        ["key": "claims", "value": toJson(claims)]
+                        ["key": "ui_locales", "value": "fr"],
+                        ["key": "claims", "value": claimsJson]
                 ]
         ]
 
         def request = getRequestWithValidOrigin(POST, loginStartURI, toJson(options))
         stubFor(post(stubs.getPAREndpointPath())
+                .withRequestBody(containing("ui_locales=fr"))
+                .withRequestBody(containing("claims=$claimsJson"))
                 .willReturn(aResponse()
                         .withBody(toJson([request_uri: "parRequestURI", expires_in: 100]))
                         .withHeader("Content-Type", "application/json")
