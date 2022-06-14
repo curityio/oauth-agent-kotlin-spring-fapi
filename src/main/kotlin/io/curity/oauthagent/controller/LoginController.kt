@@ -1,15 +1,8 @@
 package io.curity.oauthagent.controller
 
-import io.curity.oauthagent.AuthorizationRequestData
-import io.curity.oauthagent.AuthorizationServerClient
-import io.curity.oauthagent.CookieEncrypter
-import io.curity.oauthagent.CookieName
-import io.curity.oauthagent.OAuthParametersProvider
-import io.curity.oauthagent.RequestValidator
-import io.curity.oauthagent.ValidateRequestOptions
+import io.curity.oauthagent.*
 import io.curity.oauthagent.exception.CookieDecryptionException
 import io.curity.oauthagent.exception.InvalidResponseJwtException
-import io.curity.oauthagent.generateRandomString
 import org.jose4j.jwt.consumer.InvalidJwtException
 import org.jose4j.jwt.consumer.JwtConsumer
 import org.springframework.http.HttpHeaders.SET_COOKIE
@@ -21,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.util.UriComponentsBuilder
-
 
 @RestController
 @CrossOrigin
@@ -35,15 +27,19 @@ class LoginController(
     private val oAuthParametersProvider: OAuthParametersProvider
 )
 {
-    @PostMapping("/start")
-    suspend fun startLogin(request: ServerHttpRequest, response: ServerHttpResponse): StartAuthorizationResponse
+    @PostMapping("/start", consumes = ["application/json"])
+    suspend fun startLogin(
+        request: ServerHttpRequest,
+        response: ServerHttpResponse,
+        @RequestBody(required = false) body: StartAuthorizationParameters?
+    ): StartAuthorizationResponse
     {
         requestValidator.validateServletRequest(
             request,
             ValidateRequestOptions(requireCsrfHeader = false)
         )
 
-        val authorizationRequestData = getAuthorizationURL()
+        val authorizationRequestData = getAuthorizationURL(body)
 
         val encryptedCookieValue =
             cookieEncrypter.getEncryptedCookie(cookieName.tempLoginData, authorizationRequestData.toJSONString())
@@ -121,12 +117,12 @@ class LoginController(
         )
     }
 
-    private suspend fun getAuthorizationURL(): AuthorizationRequestData
+    private suspend fun getAuthorizationURL(parameters: StartAuthorizationParameters?): AuthorizationRequestData
     {
         val codeVerifier = oAuthParametersProvider.getCodeVerifier()
         val state = oAuthParametersProvider.getState()
 
-        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier)
+        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier, parameters)
 
         return AuthorizationRequestData(
             authorizationRequestUrl,
@@ -167,6 +163,10 @@ class LoginController(
 }
 
 data class OAuthQueryParams(val code: String?, val state: String?)
+
+class StartAuthorizationParameters(
+    val extraParams: List<ExtraParams>?
+)
 
 class StartAuthorizationResponse(
     val authorizationRequestUrl: String
