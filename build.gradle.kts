@@ -53,4 +53,5 @@ tasks.withType<Test> {
 		"-Djavax.net.ssl.trustStorePassword=Password1",
 		"-Dsun.net.http.allowRestrictedHeaders=true"
 	)
+	testLogging.showStandardStreams = false
 }
