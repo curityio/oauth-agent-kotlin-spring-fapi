@@ -13,7 +13,7 @@ class UserinfoControllerSpec extends TokenHandlerSpecification {
     static def userinfoURL
     static def userinfoPath = "/userInfo"
 
-    def "Requesting user info from an untrusted origin should return a 403 response"() {
+    def "Requesting user info from an untrusted origin should return a 401 response"() {
         given:
         def request = getRequestWithMaliciousOrigin(GET, userinfoURI)
 
@@ -22,7 +22,7 @@ class UserinfoControllerSpec extends TokenHandlerSpecification {
 
         then:
         def response = thrown HttpClientErrorException
-        response.statusCode == FORBIDDEN
+        response.statusCode == UNAUTHORIZED
     }
 
     def "Requesting user info without session cookies should return a 401 response"() {

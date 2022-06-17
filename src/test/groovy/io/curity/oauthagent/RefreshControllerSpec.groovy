@@ -13,7 +13,7 @@ class RefreshControllerSpec extends TokenHandlerSpecification {
     static def refreshEndpointPath = "/refresh"
     static def refreshEndpointURI
 
-    def "Sending POST request to refresh endpoint from untrusted origin should return a 403 response"() {
+    def "Sending POST request to refresh endpoint from untrusted origin should return a 401 response"() {
         given:
         def request = getRequestWithMaliciousOrigin(POST, refreshEndpointURL)
 
@@ -22,7 +22,7 @@ class RefreshControllerSpec extends TokenHandlerSpecification {
 
         then:
         def response = thrown HttpClientErrorException
-        response.statusCode == FORBIDDEN
+        response.statusCode == UNAUTHORIZED
     }
 
     def "Sending POST request to refresh endpoint without session cookies should return a 401 response"() {

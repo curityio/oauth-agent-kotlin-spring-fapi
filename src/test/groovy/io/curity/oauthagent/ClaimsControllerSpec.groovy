@@ -11,7 +11,7 @@ class ClaimsControllerSpec extends TokenHandlerSpecification {
     static def claimsURL
     static def claimsPath = "/claims"
 
-    def "Requesting claims from an untrusted origin should return a 403 response"() {
+    def "Requesting claims from an untrusted origin should return a 401 response"() {
         given:
         def request = getRequestWithMaliciousOrigin(GET, claimsURI)
 
@@ -20,7 +20,7 @@ class ClaimsControllerSpec extends TokenHandlerSpecification {
 
         then:
         def response = thrown HttpClientErrorException
-        response.statusCode == FORBIDDEN
+        response.statusCode == UNAUTHORIZED
     }
 
     def "Requesting claims without session cookies should return a 401 response"() {

@@ -11,12 +11,13 @@ import static org.springframework.http.HttpMethod.POST
 import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.OK
+import static org.springframework.http.HttpStatus.UNAUTHORIZED
 
 class LoginControllerSpec extends TokenHandlerSpecification {
 
     static def maliciousJsonWebKey = RsaJwkGenerator.generateJwk(2048)
 
-    def "Sending an OPTIONS request with wrong Origin should return 403 response without CORS headers"() {
+    def "Sending an OPTIONS request with wrong Origin should return 401 response without CORS headers"() {
         given:
         def request = getRequestWithMaliciousOrigin(OPTIONS, getLoginStartURI())
 
@@ -25,7 +26,7 @@ class LoginControllerSpec extends TokenHandlerSpecification {
 
         then:
         def response = thrown HttpClientErrorException
-        response.statusCode == FORBIDDEN
+        response.statusCode == UNAUTHORIZED
         response.getResponseHeaders()['Access-Control-Allow-Origin'] == null
     }
 
@@ -41,7 +42,7 @@ class LoginControllerSpec extends TokenHandlerSpecification {
         response.headers['Access-Control-Allow-Origin'] == ["https://www.example.com"]
     }
 
-    def "Request to end login with invalid web origin should return 403 response"() {
+    def "Request to end login with invalid web origin should return 401 response"() {
         given:
         def request = getRequestWithMaliciousOrigin(POST, loginEndURI)
 
@@ -50,7 +51,7 @@ class LoginControllerSpec extends TokenHandlerSpecification {
 
         then:
         def response = thrown HttpClientErrorException
-        response.statusCode == FORBIDDEN
+        response.statusCode == UNAUTHORIZED
     }
 
     def "Request to end login should return correct unauthenticated response"() {
@@ -67,7 +68,7 @@ class LoginControllerSpec extends TokenHandlerSpecification {
         responseBody["handled"] == false
     }
 
-    def "POST request to start login with invalid web origin should return a 403 response"() {
+    def "POST request to start login with invalid web origin should return a 401 response"() {
         given:
         def request = getRequestWithMaliciousOrigin(POST, loginStartURI)
 
@@ -76,7 +77,7 @@ class LoginControllerSpec extends TokenHandlerSpecification {
 
         then:
         def response = thrown HttpClientErrorException
-        response.statusCode == FORBIDDEN
+        response.statusCode == UNAUTHORIZED
     }
 
     def "Request to start login should return authorization request URL"() {

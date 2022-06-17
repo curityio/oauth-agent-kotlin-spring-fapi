@@ -19,7 +19,6 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.0")
-	implementation("org.springframework.boot:spring-boot-starter-tomcat:2.7.0")
 	implementation("org.springframework.session:spring-session-core:2.7.0")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
 	implementation("org.bitbucket.b_c:jose4j:0.7.9")
