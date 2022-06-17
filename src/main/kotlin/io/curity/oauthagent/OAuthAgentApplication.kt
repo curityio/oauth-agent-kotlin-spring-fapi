@@ -1,5 +1,6 @@
 package io.curity.oauthagent
 
+import io.curity.oauthagent.utilities.CustomCorsProcessor
 import org.jose4j.jwa.AlgorithmConstraints
 import org.jose4j.jwk.HttpsJwks
 import org.jose4j.jws.AlgorithmIdentifiers
@@ -9,28 +10,26 @@ import org.jose4j.keys.resolvers.HttpsJwksVerificationKeyResolver
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
-import org.springframework.web.reactive.config.CorsRegistry
-import org.springframework.web.reactive.config.WebFluxConfigurer
-
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource
+import org.springframework.web.cors.reactive.CorsWebFilter
 
 @SpringBootApplication
-class OAuthAgentApplication
-{
+class OAuthAgentApplication {
 
     @Bean
-    fun corsConfigurer(configuration: OAuthAgentConfiguration): WebFluxConfigurer
-    {
-        return object : WebFluxConfigurer
-        {
-            override fun addCorsMappings(registry: CorsRegistry)
-            {
-                registry
-                    .addMapping("/**")
-                    .allowedOrigins(*configuration.trustedWebOrigins.toTypedArray())
-                    .allowCredentials(true)
-                    .allowedMethods("POST", "GET", "OPTIONS")
-            }
-        }
+    fun corsWebFilter(configuration: OAuthAgentConfiguration): CorsWebFilter {
+
+        val source = UrlBasedCorsConfigurationSource()
+        val config = CorsConfiguration()
+        config.allowedOrigins = configuration.trustedWebOrigins
+        config.allowCredentials = true
+        config.allowedMethods = listOf("POST", "GET", "OPTIONS")
+        config.allowedHeaders = listOf("fred")
+        source.registerCorsConfiguration("/**", config)
+
+        val corsProcessor = CustomCorsProcessor()
+        return CorsWebFilter(source, corsProcessor)
     }
 
     @Bean

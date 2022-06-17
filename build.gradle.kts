@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.5.4"
+	id("org.springframework.boot") version "2.7.0"
 	id("io.spring.dependency-management") version "1.0.11.RELEASE"
 	id("com.adarshr.test-logger") version "3.2.0"
 	kotlin("jvm") version "1.5.21"
@@ -18,8 +18,9 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-webflux:2.6.1")
-	implementation("org.springframework.session:spring-session-core:2.6.0")
+	implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.0")
+	implementation("org.springframework.boot:spring-boot-starter-tomcat:2.7.0")
+	implementation("org.springframework.session:spring-session-core:2.7.0")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")
 	implementation("org.bitbucket.b_c:jose4j:0.7.9")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -28,7 +29,7 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.5.2")
 	implementation("org.apache.commons:commons-crypto:1.1.0")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.1")
+	testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.0")
 	implementation("org.codehaus.groovy:groovy:3.0.9")
 	implementation("org.codehaus.groovy:groovy-json:3.0.9")
 	testImplementation(platform("org.spockframework:spock-bom:2.0-groovy-3.0"))
