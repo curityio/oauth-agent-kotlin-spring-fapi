@@ -3,11 +3,7 @@ package io.curity.oauthagent
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.curity.oauthagent.controller.StartAuthorizationParameters
-import io.curity.oauthagent.exception.AuthorizationServerException
-import io.curity.oauthagent.exception.InvalidRequestException
-import io.curity.oauthagent.exception.InvalidStateException
-import io.curity.oauthagent.exception.MissingTempLoginDataException
-import io.curity.oauthagent.exception.UnauthorizedException
+import io.curity.oauthagent.exception.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
@@ -72,12 +68,16 @@ class AuthorizationServerClient(
     {
         if (response.statusCode().is5xxServerError)
         {
-            throw AuthorizationServerException("Server error response in $grant: ${response.awaitBody<String>()}")
+            val text = response.awaitBody<String>()
+            throw AuthorizationServerException("Server error response in $grant: $text")
         }
 
         if (response.statusCode().is4xxClientError)
         {
-            throw UnauthorizedException("$grant request was rejected: ${response.awaitBody<String>()}")
+            val text = response.awaitBody<String>()
+            val error = AuthorizationClientException("Client error response in $grant: $text")
+            error.onTokenRefreshFailed(text)
+            throw error
         }
 
         return response.awaitBody()

@@ -3,8 +3,8 @@ package io.curity.oauthagent.exception
 sealed class OAuthAgentException(
     message: String,
     cause: Throwable?,
-    val statusCode: Int,
-    val code: String,
+    var statusCode: Int,
+    var code: String,
     private val logMessage: String?
 ) : RuntimeException(message, cause) {
 

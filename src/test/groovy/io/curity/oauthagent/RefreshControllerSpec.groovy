@@ -4,6 +4,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.web.client.HttpClientErrorException
 
 import static org.springframework.http.HttpMethod.POST
+import static org.springframework.http.HttpStatus.BAD_REQUEST
 import static org.springframework.http.HttpStatus.FORBIDDEN
 import static org.springframework.http.HttpStatus.NO_CONTENT
 import static org.springframework.http.HttpStatus.UNAUTHORIZED
@@ -82,9 +83,28 @@ class RefreshControllerSpec extends TokenHandlerSpecification {
         cookiesAreDifferent(refreshTokenCookieName, cookiesAndCSRF.cookies, currentCookies)
     }
 
-    def "A 4xx response from the Identity Server when refreshing tokens should result in a 401 response"() {
+    def "A configuration error when refreshing tokens should result the SPA displaying a 400 error"() {
         given:
-        stubs.idsvrRespondsWith401WhenRefreshingTokens()
+        stubs.idsvrRespondsToRefreshWithInvalidClientWhenClientSecretIsMisconfigured()
+
+        and: "There is a proper request to the refresh endpoint"
+        def cookiesAndCSRF = cookiesAndCSRFForAuthenticatedUser
+        def additionalHeaders = new HttpHeaders()
+        additionalHeaders.addAll("Cookie", cookiesAndCSRF.cookies)
+        additionalHeaders.add("x-${configuration.cookieNamePrefix}-csrf", cookiesAndCSRF.csrf.toString())
+        def request = getRequestWithValidOrigin(POST, refreshEndpointURL, null, additionalHeaders)
+
+        when: "The request is sent"
+        client.exchange(request, String.class)
+
+        then: "The response is a 400"
+        def response = thrown HttpClientErrorException
+        response.statusCode == BAD_REQUEST
+    }
+
+    def "An expired refresh token should result in a 401 response so that the SPA can trigger re-authentication"() {
+        given:
+        stubs.idsvrRespondsToRefreshWithInvalidGrantWhenRefreshTokenIsExpired()
 
         and: "There is a proper request to the refresh endpoint"
         def cookiesAndCSRF = cookiesAndCSRFForAuthenticatedUser

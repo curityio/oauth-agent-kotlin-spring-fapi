@@ -59,13 +59,23 @@ class IdsvrStubs {
                 .withBody(toJson([access_token: "access_new", refresh_token: "refresh_new", "id_token": IDToken]))
             ))
     }
-    def idsvrRespondsWith401WhenRefreshingTokens() {
+
+    def idsvrRespondsToRefreshWithInvalidGrantWhenRefreshTokenIsExpired() {
         stubFor(post(getTokenEndpointPath())
             .withRequestBody(containing("refresh_token=refresh"))
             .willReturn(aResponse()
-                    .withStatus(401)
-                    .withBody("{}")
+                    .withStatus(400)
+                    .withBody("{error: invalid_grant}")
             ))
+    }
+
+    def idsvrRespondsToRefreshWithInvalidClientWhenClientSecretIsMisconfigured() {
+        stubFor(post(getTokenEndpointPath())
+                .withRequestBody(containing("refresh_token=refresh"))
+                .willReturn(aResponse()
+                        .withStatus(400)
+                        .withBody("{error: invalid_client}")
+                ))
     }
 
     def getPAREndpointPath() {
