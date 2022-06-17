@@ -127,11 +127,18 @@ class TokenHandlerSpecification extends Specification {
     }
 
     protected def getValidResponseJWT() {
-        getResponseJWT(rsaJsonWebKey)
+        getResponseJWT(rsaJsonWebKey, getResponseJWTPayload())
     }
 
-    protected def getResponseJWT(RsaJsonWebKey webKey) {
-        def payload = responseJWTPayload
+    protected def getFailedResponseJWT(String errorCode) {
+        getResponseJWT(rsaJsonWebKey, getResponseJWTErrorPayload(errorCode))
+    }
+
+    protected def getResponseJWTWithKey(RsaJsonWebKey webKey) {
+        getResponseJWT(webKey, getResponseJWTPayload())
+    }
+
+    protected def getResponseJWT(RsaJsonWebKey webKey, JwtClaims payload) {
 
         def jws = new JsonWebSignature()
         jws.setPayload(payload.toJson())
@@ -150,6 +157,19 @@ class TokenHandlerSpecification extends Specification {
         claims.setGeneratedJwtId()
         claims.setIssuedAtToNow()
         claims.setClaim("code","12345")
+        claims.setClaim("state", "someState")
+
+        claims
+    }
+
+    private getResponseJWTErrorPayload(String errorCode) {
+        def claims = new JwtClaims()
+        claims.setIssuer(configuration.issuer)
+        claims.setAudience(configuration.clientID)
+        claims.setExpirationTimeMinutesInTheFuture(10)
+        claims.setGeneratedJwtId()
+        claims.setIssuedAtToNow()
+        claims.setClaim("error", errorCode)
         claims.setClaim("state", "someState")
 
         claims

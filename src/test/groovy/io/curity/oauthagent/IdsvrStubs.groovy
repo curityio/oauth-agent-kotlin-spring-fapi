@@ -103,6 +103,14 @@ class IdsvrStubs {
                 ))
     }
 
+    def idsvrRespondsWith401DuringUserInfoRequest() {
+        stubFor(post(getUserInfoEndpointPath())
+                .willReturn(aResponse()
+                        .withStatus(401)
+                        .withBody("{error: invalid_token}")
+                ))
+    }
+
     private def getIDToken() {
         def claims = new JwtClaims()
         claims.setIssuer(configuration.issuer)

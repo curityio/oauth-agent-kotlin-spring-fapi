@@ -220,7 +220,73 @@ class LoginControllerSpec extends TokenHandlerSpecification {
         responseBody["code"] == "invalid_request"
     }
 
+    def "Ending a login with an invalid_scope error should return a 400 error to the SPA for display"() {
+        given:
+        stubs.idsvrRespondsToParRequest()
+        def startLoginRequest = getRequestWithValidOrigin(POST, loginStartURI)
+        def startLoginResponse = client.exchange(startLoginRequest, String.class)
+
+        def cookies = startLoginResponse.headers.get("Set-Cookie")
+
+        and:
+        stubs.idsvrRespondsToJWKSRequest()
+
+        and:
+        def cookieHeaders = new HttpHeaders()
+        cookieHeaders.addAll("Cookie", cookies)
+
+        def errorJwt = getFailedResponseJWT("invalid_scope")
+        def request = getRequestWithValidOrigin(
+                POST,
+                loginEndURI,
+                toJson([pageUrl: "${configuration.redirectUri}?response=$errorJwt" ]),
+                cookieHeaders
+        )
+
+        when:
+        client.exchange(request, String.class)
+
+        then:
+        def response = thrown HttpClientErrorException
+        response.statusCode == BAD_REQUEST
+        def responseBody = json.parseText(response.responseBodyAsString)
+        responseBody["code"] == "invalid_scope"
+    }
+
+    def "Ending a login with a login_required error should return a 401 error to the SPA"() {
+        given:
+        stubs.idsvrRespondsToParRequest()
+        def startLoginRequest = getRequestWithValidOrigin(POST, loginStartURI)
+        def startLoginResponse = client.exchange(startLoginRequest, String.class)
+
+        def cookies = startLoginResponse.headers.get("Set-Cookie")
+
+        and:
+        stubs.idsvrRespondsToJWKSRequest()
+
+        and:
+        def cookieHeaders = new HttpHeaders()
+        cookieHeaders.addAll("Cookie", cookies)
+
+        def errorJwt = getFailedResponseJWT("login_required")
+        def request = getRequestWithValidOrigin(
+                POST,
+                loginEndURI,
+                toJson([pageUrl: "${configuration.redirectUri}?response=$errorJwt" ]),
+                cookieHeaders
+        )
+
+        when:
+        client.exchange(request, String.class)
+
+        then:
+        def response = thrown HttpClientErrorException
+        response.statusCode == UNAUTHORIZED
+        def responseBody = json.parseText(response.responseBodyAsString)
+        responseBody["code"] == "login_required"
+    }
+
     private def getMaliciousResponseJwt() {
-        getResponseJWT(maliciousJsonWebKey)
+        getResponseJWTWithKey(maliciousJsonWebKey)
     }
 }
