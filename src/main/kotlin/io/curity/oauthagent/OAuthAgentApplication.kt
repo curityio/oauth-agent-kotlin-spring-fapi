@@ -25,7 +25,6 @@ class OAuthAgentApplication {
         config.allowedOrigins = configuration.trustedWebOrigins
         config.allowCredentials = true
         config.allowedMethods = listOf("POST", "GET", "OPTIONS")
-        config.allowedHeaders = listOf("fred")
         source.registerCorsConfiguration("/**", config)
 
         val corsProcessor = CustomCorsProcessor()
