@@ -63,7 +63,7 @@ class LoginController(
             ValidateRequestOptions(requireCsrfHeader = false)
         )
 
-        val queryParams = processOAuthLoginResponse(response, body.pageUrl)
+        val queryParams = processOAuthLoginResponse(body.pageUrl)
         val isOAuthResponse = queryParams.state != null && queryParams.code != null
 
         val isLoggedIn: Boolean
@@ -132,7 +132,7 @@ class LoginController(
         )
     }
 
-    private fun processOAuthLoginResponse(response: ServerHttpResponse, pageUrl: String?): OAuthQueryParams
+    private fun processOAuthLoginResponse(pageUrl: String?): OAuthQueryParams
     {
         if (pageUrl == null)
         {
@@ -155,7 +155,6 @@ class LoginController(
                 return OAuthQueryParams(code, state)
             }
 
-            response.headers[SET_COOKIE] = cookieEncrypter.getCookieForUnset(cookieName.tempLoginData)
             throw getAuthorizationResponseError(responseClaims)
 
         } catch (exception: InvalidJwtException)

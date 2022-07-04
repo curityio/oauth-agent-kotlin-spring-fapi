@@ -1,28 +1,39 @@
 package io.curity.oauthagent.exception
 
-import io.curity.oauthagent.utilities.Grants
+import io.curity.oauthagent.utilities.Grant
 import org.springframework.http.HttpStatus
 
-class AuthorizationClientException(logMessage: String) : OAuthAgentException(
+class AuthorizationClientException(status: Int, code: String, responseText: String) : OAuthAgentException(
     "A request sent to the Authorization Server was rejected",
     null,
-    400,
-    "authorization_error",
-    logMessage
+    status,
+    code,
+    responseText
 ) {
 
-    // Return a response to the SPA based on the response form the Authorization Server
-    fun classify(grant: String, status: HttpStatus, text: String) {
+    companion object Factory {
 
-       // When a refresh token expires, the 401 informs the SPA to trigger re-authentication
-        if (grant == Grants.RefreshToken && text.contains("invalid_grant")) {
-            this.code = "session_expired"
-            this.statusCode = 401
-        }
+        fun create(grant: Grant, status: HttpStatus, responseText: String): AuthorizationClientException {
 
-        // When an access token expires during a user info request, inform the SPA to do a token refresh
-        if (grant == Grants.UserInfo && status == HttpStatus.UNAUTHORIZED) {
-            this.statusCode = 401
+            var statusNumber = 400
+            var errorCode = "authorization_error"
+
+            if (grant == Grant.UserInfo && status == HttpStatus.UNAUTHORIZED) {
+                errorCode = "token_expired"
+                statusNumber = 401
+            }
+
+            if (grant == Grant.RefreshToken && responseText.contains("invalid_grant")) {
+                errorCode = "session_expired"
+                statusNumber = 401
+            }
+
+            val logMessage = "$grant request failed with response: $responseText"
+            return AuthorizationClientException(
+                statusNumber,
+                errorCode,
+                logMessage
+            )
         }
     }
 }
