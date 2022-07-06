@@ -13,7 +13,7 @@ class LogoutControllerSpec extends TokenHandlerSpecification {
     static def logoutEndpointPath = "/logout"
     static def logoutEndpointURI
 
-    def "Posting to logout from a malicious origin should return a 403 response"() {
+    def "Posting to logout from a malicious origin should return a 401 response"() {
         given:
         def request = getRequestWithMaliciousOrigin(POST, logoutEndpointURL)
 
@@ -22,7 +22,7 @@ class LogoutControllerSpec extends TokenHandlerSpecification {
 
         then:
         def response = thrown HttpClientErrorException
-        response.statusCode == FORBIDDEN
+        response.statusCode == UNAUTHORIZED
     }
 
     def "Posting to logout without cookies should return a 401 response"() {

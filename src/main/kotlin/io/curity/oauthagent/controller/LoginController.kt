@@ -1,8 +1,10 @@
 package io.curity.oauthagent.controller
 
 import io.curity.oauthagent.*
+import io.curity.oauthagent.exception.AuthorizationResponseException
 import io.curity.oauthagent.exception.CookieDecryptionException
 import io.curity.oauthagent.exception.InvalidResponseJwtException
+import org.jose4j.jwt.JwtClaims
 import org.jose4j.jwt.consumer.InvalidJwtException
 import org.jose4j.jwt.consumer.JwtConsumer
 import org.springframework.http.HttpHeaders.SET_COOKIE
@@ -61,7 +63,7 @@ class LoginController(
             ValidateRequestOptions(requireCsrfHeader = false)
         )
 
-        val queryParams = getOAuthQueryParams(body.pageUrl)
+        val queryParams = processOAuthLoginResponse(body.pageUrl)
         val isOAuthResponse = queryParams.state != null && queryParams.code != null
 
         val isLoggedIn: Boolean
@@ -73,7 +75,6 @@ class LoginController(
             val tokenResponse =
                 authorizationServerClient.getTokens(tempLoginData, queryParams.code!!, queryParams.state!!)
 
-            
             val csrfCookie = request.getCookie(cookieName.csrf)
             csrfToken = if (csrfCookie == null)
             {
@@ -131,7 +132,7 @@ class LoginController(
         )
     }
 
-    private fun getOAuthQueryParams(pageUrl: String?): OAuthQueryParams
+    private fun processOAuthLoginResponse(pageUrl: String?): OAuthQueryParams
     {
         if (pageUrl == null)
         {
@@ -148,10 +149,14 @@ class LoginController(
         try
         {
             val responseClaims = jwtConsumer.processToClaims(queryParams["response"]!!.first())
-            return OAuthQueryParams(
-                responseClaims.getStringClaimValue("code"),
-                responseClaims.getStringClaimValue("state")
-            )
+            val code = responseClaims.getStringClaimValue("code")
+            val state = responseClaims.getStringClaimValue("state")
+            if (!code.isNullOrBlank() && !state.isNullOrBlank()) {
+                return OAuthQueryParams(code, state)
+            }
+
+            throw getAuthorizationResponseError(responseClaims)
+
         } catch (exception: InvalidJwtException)
         {
             throw InvalidResponseJwtException(exception)
@@ -160,6 +165,20 @@ class LoginController(
 
     private fun ServerHttpRequest.getCookie(cookieName: String): String? =
         this.cookies[cookieName]?.first()?.value
+
+    private fun getAuthorizationResponseError(responseClaims: JwtClaims): AuthorizationResponseException {
+
+        var errorCode = responseClaims.getStringClaimValue("error")
+        var errorDescription = responseClaims.getStringClaimValue("error_description")
+        if (errorCode.isNullOrBlank()) {
+            errorCode = "authorization_response_error"
+        }
+        if (errorDescription.isNullOrBlank()) {
+            errorDescription = "Login failed at the Authorization Server"
+        }
+
+        return AuthorizationResponseException(errorCode, errorDescription)
+    }
 }
 
 data class OAuthQueryParams(val code: String?, val state: String?)

@@ -81,7 +81,7 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/login/end" \
 -H 'accept: application/json' \
 -d '{"pageUrl":"'$WEB_BASE_URL'"}' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '403' ]; then
+if [ "$HTTP_STATUS" != '401' ]; then
   echo '*** End login did not fail as expected'
   exit
 fi
@@ -121,7 +121,7 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/login/start" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '403' ]; then
+if [ "$HTTP_STATUS" != '401' ]; then
   echo '*** Start Login with an invalid web origin did not fail as expected'
   exit
 fi
@@ -217,7 +217,7 @@ HTTP_STATUS=$(curl -k -i -s -X GET "$OAUTH_AGENT_BASE_URL/userInfo" \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
 echo "$HTTP_STATUS"
-if [ "$HTTP_STATUS" != '403' ]; then
+if [ "$HTTP_STATUS" != '401' ]; then
   echo '*** Invalid user info request did not fail as expected'
   exit
 fi
@@ -312,7 +312,7 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/refresh" \
 -H 'content-type: application/json' \
 -H 'accept: application/json' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '403' ]; then
+if [ "$HTTP_STATUS" != '401' ]; then
   echo '*** Invalid token refresh request did not fail as expected'
   exit
 fi
@@ -436,7 +436,7 @@ HTTP_STATUS=$(curl -k -i -s -X POST "$OAUTH_AGENT_BASE_URL/logout" \
 -H 'accept: application/json' \
 -d '{"pageUrl":"'$WEB_BASE_URL'"}' \
 -o $RESPONSE_FILE -w '%{http_code}')
-if [ "$HTTP_STATUS" != '403' ]; then
+if [ "$HTTP_STATUS" != '401' ]; then
   echo '*** Invalid logout request did not fail as expected'
   exit
 fi

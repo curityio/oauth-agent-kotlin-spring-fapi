@@ -3,11 +3,8 @@ package io.curity.oauthagent
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.curity.oauthagent.controller.StartAuthorizationParameters
-import io.curity.oauthagent.exception.AuthorizationServerException
-import io.curity.oauthagent.exception.InvalidRequestException
-import io.curity.oauthagent.exception.InvalidStateException
-import io.curity.oauthagent.exception.MissingTempLoginDataException
-import io.curity.oauthagent.exception.UnauthorizedException
+import io.curity.oauthagent.exception.*
+import io.curity.oauthagent.utilities.Grant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
@@ -54,11 +51,13 @@ class AuthorizationServerClient(
 
         try
         {
+            val body = "client_id=${config.clientID}&grant_type=authorization_code&redirect_uri=${config.redirectUri}&code=${code}&code_verifier=${loginData.codeVerifier}"
             return client.post()
                 .uri(config.tokenEndpoint)
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .bodyValue("client_id=${config.clientID}&grant_type=authorization_code&redirect_uri=${config.redirectUri}&code=${code}&code_verifier=${loginData.codeVerifier}")
-                .awaitExchange { response -> handleAuthorizationServerResponse(response, "Authorization Code Grant") }
+                .bodyValue(body)
+                .awaitExchange { response -> handleAuthorizationServerResponse(response, Grant.AuthorizationCode) }
+
         } catch (exception: WebClientRequestException)
         {
             throw AuthorizationServerException("Connectivity problem during an Authorization Code Grant", exception)
@@ -67,17 +66,19 @@ class AuthorizationServerClient(
 
     private suspend inline fun <reified T : Any> handleAuthorizationServerResponse(
         response: ClientResponse,
-        grant: String
+        grant: Grant
     ): T
     {
         if (response.statusCode().is5xxServerError)
         {
-            throw AuthorizationServerException("Server error response in $grant: ${response.awaitBody<String>()}")
+            val text = response.awaitBody<String>()
+            throw AuthorizationServerException("Server error response in $grant: $text")
         }
 
         if (response.statusCode().is4xxClientError)
         {
-            throw UnauthorizedException("$grant request was rejected: ${response.awaitBody<String>()}")
+            val text = response.awaitBody<String>()
+            throw AuthorizationClientException.create(grant, response.statusCode(), text)
         }
 
         return response.awaitBody()
@@ -91,7 +92,7 @@ class AuthorizationServerClient(
                 .uri(config.userInfoEndpoint)
                 .header("Authorization", "Bearer $accessToken")
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .awaitExchange { response -> handleAuthorizationServerResponse(response, "User Info Download") }
+                .awaitExchange { response -> handleAuthorizationServerResponse(response, Grant.UserInfo) }
 
         } catch (exception: WebClientRequestException)
         {
@@ -107,7 +108,7 @@ class AuthorizationServerClient(
                 .uri(config.tokenEndpoint)
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .bodyValue("grant_type=refresh_token&refresh_token=$refreshToken&client_id=${config.clientID}")
-                .awaitExchange { response -> handleAuthorizationServerResponse(response, "Refresh Token Grant") }
+                .awaitExchange { response -> handleAuthorizationServerResponse(response, Grant.RefreshToken) }
 
         } catch (exception: WebClientRequestException)
         {
@@ -169,7 +170,7 @@ class AuthorizationServerClient(
                 .uri(config.authorizeEndpoint + "/par")
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .bodyValue(body)
-                .awaitExchange { response -> handleAuthorizationServerResponse<PARResponse>(response, "PAR") }
+                .awaitExchange { response -> handleAuthorizationServerResponse<PARResponse>(response, Grant.PAR) }
 
             return "${config.authorizeExternalEndpoint}?client_id=${config.clientID}&request_uri=${parResponse.requestUri}"
         } catch (exception: WebClientRequestException)
