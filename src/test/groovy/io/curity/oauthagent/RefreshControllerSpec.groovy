@@ -102,7 +102,7 @@ class RefreshControllerSpec extends TokenHandlerSpecification {
         response.statusCode == BAD_REQUEST
     }
 
-    def "An expired refresh token should result in a 401 response so that the SPA can trigger re-authentication"() {
+    def "An expired refresh token should result in a 401 response and cleared cookies"() {
         given:
         stubs.idsvrRespondsToRefreshWithInvalidGrantWhenRefreshTokenIsExpired()
 
@@ -119,6 +119,10 @@ class RefreshControllerSpec extends TokenHandlerSpecification {
         then: "The response is a 401"
         def response = thrown HttpClientErrorException
         response.statusCode == UNAUTHORIZED
+
+        and: "Cookie values should be set to empty cookies"
+        def currentCookies = response.responseHeaders["Set-Cookie"]
+        !currentCookies.any {it.matches("${configuration.cookieNamePrefix}-(at|auth|csrf|id)=[^;]")}
     }
 
     private def getRefreshEndpointURL() {
