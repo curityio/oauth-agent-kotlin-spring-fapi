@@ -16,6 +16,7 @@ oauthagent:
 
   trustedWebOrigins:
   - https://www.example.com
+  corsEnabled: false
   issuer: https://login.example.com/oauth
   jwksUri: https://localhost:8443/oauth/jwks
   authorizeEndpoint: https://localhost:8443/oauth/authorize

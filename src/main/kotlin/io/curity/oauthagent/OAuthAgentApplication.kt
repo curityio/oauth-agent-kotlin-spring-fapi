@@ -8,6 +8,7 @@ import org.jose4j.jwt.consumer.JwtConsumer
 import org.jose4j.jwt.consumer.JwtConsumerBuilder
 import org.jose4j.keys.resolvers.HttpsJwksVerificationKeyResolver
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
 import org.springframework.web.cors.CorsConfiguration
@@ -18,6 +19,7 @@ import org.springframework.web.cors.reactive.CorsWebFilter
 class OAuthAgentApplication {
 
     @Bean
+    @ConditionalOnProperty(value = ["CORS_ENABLED"], havingValue = "true", matchIfMissing = true)
     fun corsWebFilter(configuration: OAuthAgentConfiguration): CorsWebFilter {
 
         val source = UrlBasedCorsConfigurationSource()

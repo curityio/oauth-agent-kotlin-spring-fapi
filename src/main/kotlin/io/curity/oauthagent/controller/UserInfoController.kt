@@ -13,15 +13,20 @@ class UserInfoController(
     private val requestValidator: RequestValidator,
     private val cookieEncrypter: CookieEncrypter,
     private val cookieName: CookieName,
-    private val authorizationServerClient: AuthorizationServerClient
+    private val authorizationServerClient: AuthorizationServerClient,
+    private val config: OAuthAgentConfiguration
 )
 {
     @GetMapping("", produces = ["application/json"])
     suspend fun getUserInfo(request: ServerHttpRequest): Map<String, Any>
     {
+        // In same domain setups, the origin header is not sent for GET and HEAD requests
+        // The origin is validated on POST requests, as part of CSRF defence in depth
         requestValidator.validateServletRequest(
             request,
-            ValidateRequestOptions(requireCsrfHeader = false)
+            ValidateRequestOptions(
+                requireTrustedOrigin = config.corsEnabled,
+                requireCsrfHeader = false)
         )
 
         val accessTokenCookie = request.cookies[cookieName.accessToken]?.first()?.value

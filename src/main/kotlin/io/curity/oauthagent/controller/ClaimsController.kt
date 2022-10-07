@@ -12,15 +12,21 @@ import org.springframework.web.bind.annotation.RestController
 class ClaimsController(
     private val requestValidator: RequestValidator,
     private val idTokenClaims: IDTokenClaims,
-    private val cookieName: CookieName
+    private val cookieName: CookieName,
+    private val config: OAuthAgentConfiguration
 )
 {
     @GetMapping("", produces = ["application/json"])
     suspend fun getClaims(request: ServerHttpRequest): Map<String, Any>
     {
+        // In same domain setups, the origin header is not sent for GET and HEAD requests
+        // The origin is validated on POST requests, as part of CSRF defence in depth
         requestValidator.validateServletRequest(
             request,
-            ValidateRequestOptions(requireCsrfHeader = false)
+            ValidateRequestOptions(
+                requireTrustedOrigin = config.corsEnabled,
+                requireCsrfHeader = false,
+            )
         )
 
         val idTokenCookie = request.cookies[cookieName.idToken]?.first()?.value

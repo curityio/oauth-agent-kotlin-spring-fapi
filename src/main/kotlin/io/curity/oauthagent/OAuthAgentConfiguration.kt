@@ -31,6 +31,7 @@ data class OAuthAgentConfigurationProperties(
     var cookieNamePrefix: String,
     var encKey: String,
     var trustedWebOrigins: List<String>,
+    var corsEnabled: Boolean,
     var cookieSerializeOptions: CookieSerializeOptions
 )
 
@@ -69,5 +70,6 @@ class OAuthAgentConfiguration(configurationProperties: OAuthAgentConfigurationPr
     val cookieNamePrefix = configurationProperties.cookieNamePrefix
     val encKey = configurationProperties.encKey
     val trustedWebOrigins = configurationProperties.trustedWebOrigins
+    val corsEnabled = configurationProperties.corsEnabled
     val cookieSerializeOptions = configurationProperties.cookieSerializeOptions
 }
