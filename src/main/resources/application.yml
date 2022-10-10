@@ -16,6 +16,7 @@ oauthagent:
 
   trustedWebOrigins:
   - ${TRUSTED_WEB_ORIGIN:https://www.example.local}
+  corsEnabled: ${CORS_ENABLED:true}
   issuer: ${ISSUER:https://login.example.local:8443/oauth/v2/oauth-anonymous}
   jwksUri: ${JWKS_URI:https://login.example.local:8443/oauth/v2/oauth-anonymous/jwks}
   authorizeEndpoint: ${AUTHORIZE_ENDPOINT:https://login.example.local:8443/oauth/v2/oauth-authorize}
