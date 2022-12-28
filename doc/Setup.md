@@ -63,7 +63,8 @@ Alternatively the API can be run in an IDE of your choice:
 ./gradlew bootRun
 ```
 
-Test that the API is contactable by running this command from the root folder:
+Test that the OAuth agent is contactable by running this command from the root folder.\
+Initially there will be an error connecting to the Curity Identity Server:
 
 ```bash
 curl --cacert ./certs/example.ca.pem -X POST https://api.example.local:8080/oauth-agent/login/start \
@@ -72,9 +73,9 @@ curl --cacert ./certs/example.ca.pem -X POST https://api.example.local:8080/oaut
 
 ## Run Integration Tests
 
-You can run Spock integration tests with the following command, which spin up an instance of the API.\
-Integration tests use Wiremock to mock responses from the Curity Identity Server and do not \
-need any external dependencies.
+Run Spock integration tests with the following command.\
+This spins up an instance of the API that uses a test configuration.\
+Integration tests use Wiremock to mock responses from the Curity Identity Server.
 
 ```bash
 ./gradlew test --rerun-tasks
@@ -82,19 +83,23 @@ need any external dependencies.
 
 ## Run End-to-End Tests
 
-Run some tests that also use the Curity Identity Server.\
-First copy a license file into the `test/idsvr` folder and then run the following commands:
+Re-run the API, connected to the Curity Identity Server:
 
 ```bash
-cd test/idsvr
-./deploy.sh
+./gradlew bootRun
+```
+
+Then copy a license file into the `test/idsvr` folder and run the following commands:
+
+```bash
+./test/idsvr/deploy.sh
 ```
 
 Then run a test script that uses curl requests to verify the OAuth Agent's operations:
 
 ```bash
-cd test
-./test-oauth-agent.sh
+cd ..
+./test/test-oauth-agent.sh
 ```
 
 ![API Tests](api-tests.png)
@@ -104,6 +109,5 @@ cd test
 When finished with your development session, free Docker resources like this:
 
 ```bash
-cd test/idsvr
-./teardown.sh
+./test/idsvr/teardown.sh
 ```
