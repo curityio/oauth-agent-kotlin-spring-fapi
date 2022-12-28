@@ -37,8 +37,7 @@ For local development of the OAuth Agent the following URLs are used:
 Run this script to create development certificates for the above domains: 
 
 ```bash
-cd certs
-./create-certs.sh
+./certs/create-certs.sh
 ```
 
 ## Configure Java SSL Trust

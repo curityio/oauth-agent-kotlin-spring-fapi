@@ -18,6 +18,9 @@ data class OAuthAgentConfigurationProperties(
     var postLogoutRedirectURI: String?,
     var scope: String?,
 
+    // Behavior settings
+    var financialGrade: Boolean,
+
     // Authorization Server settings
     var issuer: String,
     var jwksUri: String,
@@ -50,6 +53,9 @@ class OAuthAgentConfiguration(configurationProperties: OAuthAgentConfigurationPr
 {
     // Host settings
     val endpointsPrefix = configurationProperties.endpointsPrefix
+
+    // Behavior settings
+    val financialGrade = configurationProperties.financialGrade
 
     // Client settings
     val clientID = configurationProperties.clientID

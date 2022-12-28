@@ -4,9 +4,7 @@
 # A script to create development certificates used for local development
 ########################################################################
 
-#
-# Fail on first error
-#
+cd "$(dirname "${BASH_SOURCE[0]}")"
 set -e
 
 #

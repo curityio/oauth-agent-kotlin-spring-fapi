@@ -1,6 +1,7 @@
 package io.curity.oauthagent.controller
 
 import io.curity.oauthagent.*
+import io.curity.oauthagent.behaviors.authorizationrequest.AuthorizationRequestHandler
 import io.curity.oauthagent.exception.AuthorizationResponseException
 import io.curity.oauthagent.exception.CookieDecryptionException
 import io.curity.oauthagent.exception.InvalidResponseJwtException
@@ -21,12 +22,12 @@ import org.springframework.web.util.UriComponentsBuilder
 @CrossOrigin
 @RequestMapping("/\${oauthagent.endpointsPrefix}/login")
 class LoginController(
-    private val cookieName: CookieName,
-    private val cookieEncrypter: CookieEncrypter,
-    private val authorizationServerClient: AuthorizationServerClient,
-    private val requestValidator: RequestValidator,
-    private val jwtConsumer: JwtConsumer,
-    private val oAuthParametersProvider: OAuthParametersProvider
+        private val authorizationRequestHandler: AuthorizationRequestHandler,
+        private val cookieName: CookieName,
+        private val cookieEncrypter: CookieEncrypter,
+        private val authorizationServerClient: AuthorizationServerClient,
+        private val requestValidator: RequestValidator,
+        private val jwtConsumer: JwtConsumer
 )
 {
     @PostMapping("/start", consumes = ["application/json"])
@@ -41,7 +42,7 @@ class LoginController(
             ValidateRequestOptions(requireCsrfHeader = false)
         )
 
-        val authorizationRequestData = getAuthorizationURL(body)
+        val authorizationRequestData = authorizationRequestHandler.createRequest(body)
 
         val encryptedCookieValue =
             cookieEncrypter.getEncryptedCookie(cookieName.tempLoginData, authorizationRequestData.toJSONString())
@@ -115,20 +116,6 @@ class LoginController(
             isOAuthResponse,
             isLoggedIn,
             csrfToken
-        )
-    }
-
-    private suspend fun getAuthorizationURL(parameters: StartAuthorizationParameters?): AuthorizationRequestData
-    {
-        val codeVerifier = oAuthParametersProvider.getCodeVerifier()
-        val state = oAuthParametersProvider.getState()
-
-        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier, parameters)
-
-        return AuthorizationRequestData(
-            authorizationRequestUrl,
-            codeVerifier,
-            state
         )
     }
 
