@@ -1,0 +1,41 @@
+oauthagent:
+  clientID: spa-client
+  redirectUri: http://www.example.local/
+  postLogoutRedirectURI: http://www.example.local/
+  scope: openid profile
+
+  financialGrade: false
+
+  encKey: 4e4636356d65563e4c73233847503e3b21436e6f7629724950526f4b5e2e4e50
+  cookieNamePrefix: example
+  endpointsPrefix: 'oauth-agent'
+  cookieSerializeOptions:
+    httpOnly: true
+    sameSite: true
+    secure: false
+    domain: api.example.local
+    path: '/'
+
+  trustedWebOrigins:
+  - http://www.example.local
+  corsEnabled: true
+  issuer: http://login.example.local:8443/oauth/v2/oauth-anonymous
+  jwksUri: http://login.example.local:8443/oauth/v2/oauth-anonymous/jwks
+  authorizeEndpoint: http://login.example.local:8443/oauth/v2/oauth-authorize
+  authorizeExternalEndpoint:
+  logoutEndpoint: http://login.example.local:8443/oauth/v2/oauth-session/logout
+  tokenEndpoint: http://login.example.local:8443/oauth/v2/oauth-token
+  userInfoEndpoint: http://login.example.local:8443/oauth/v2/oauth-userinfo
+
+  ssl:
+    enabled: false
+    key-store:
+    key-store-password:
+    trust-store:
+
+server:
+  port: 8080
+  ssl:
+    enabled: false
+    key-store:
+    key-store-password:

@@ -2,7 +2,7 @@ package io.curity.oauthagent
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.curity.oauthagent.behaviors.authorizationrequest.AuthorizationRequestData
+import io.curity.oauthagent.handlers.authorizationrequest.AuthorizationRequestData
 import io.curity.oauthagent.controller.StartAuthorizationParameters
 import io.curity.oauthagent.exception.*
 import io.curity.oauthagent.utilities.Grant

@@ -1,7 +1,7 @@
 package io.curity.oauthagent.controller
 
 import io.curity.oauthagent.*
-import io.curity.oauthagent.behaviors.authorizationrequest.AuthorizationRequestHandler
+import io.curity.oauthagent.handlers.authorizationrequest.AuthorizationRequestHandler
 import io.curity.oauthagent.exception.AuthorizationResponseException
 import io.curity.oauthagent.exception.CookieDecryptionException
 import io.curity.oauthagent.exception.InvalidResponseJwtException

@@ -1,4 +1,4 @@
-package io.curity.oauthagent.behaviors.authorizationrequest
+package io.curity.oauthagent.handlers.authorizationrequest
 
 data class AuthorizationRequestData(
     val authorizationRequestUrl: String?,
