@@ -1,8 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.7.0"
-	id("io.spring.dependency-management") version "1.0.11.RELEASE"
+	id("org.springframework.boot") version "2.7.7"
+	id("io.spring.dependency-management") version "1.1.0"
 	id("com.adarshr.test-logger") version "3.2.0"
 	kotlin("jvm") version "1.5.21"
 	kotlin("plugin.spring") version "1.5.21"
@@ -18,24 +18,24 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.0")
+	implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.7")
 	implementation("org.springframework.session:spring-session-core:2.7.0")
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
-	implementation("org.bitbucket.b_c:jose4j:0.7.12")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
+	implementation("org.bitbucket.b_c:jose4j:0.9.2")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.2")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.2")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 	implementation("org.apache.commons:commons-crypto:1.1.0")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.0")
 	implementation("org.codehaus.groovy:groovy:3.0.11")
 	implementation("org.codehaus.groovy:groovy-json:3.0.11")
+	testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.7")
 	testImplementation(platform("org.spockframework:spock-bom:2.0-groovy-3.0"))
 	testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
 	testImplementation("org.spockframework:spock-spring:2.1-groovy-3.0")
-	testImplementation("com.github.tomakehurst:wiremock-jre8:2.33.2")
-	testImplementation("org.apache.httpcomponents:httpclient:4.5.13")
+	testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
+	testImplementation("org.apache.httpcomponents:httpclient:4.5.14")
 }
 
 tasks.withType<KotlinCompile> {
