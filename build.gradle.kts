@@ -28,12 +28,12 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.6.4")
 	implementation("org.apache.commons:commons-crypto:1.1.0")
 
-	implementation("org.codehaus.groovy:groovy:3.0.11")
-	implementation("org.codehaus.groovy:groovy-json:3.0.11")
+	implementation("org.apache.groovy:groovy:4.0.7")
+	implementation("org.apache.groovy:groovy-json:4.0.7")
 	testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.7")
-	testImplementation(platform("org.spockframework:spock-bom:2.0-groovy-3.0"))
-	testImplementation("org.spockframework:spock-core:2.1-groovy-3.0")
-	testImplementation("org.spockframework:spock-spring:2.1-groovy-3.0")
+	testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-4.0"))
+	testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
+	testImplementation("org.spockframework:spock-spring:2.3-groovy-4.0")
 	testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
 	testImplementation("org.apache.httpcomponents:httpclient:4.5.14")
 }
