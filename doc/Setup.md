@@ -7,7 +7,7 @@ how to set up the OAuth Agent together with an instance of the Curity Identity S
 
 Ensure that these tools are installed locally:
 
-- [Java 11 or later](https://openjdk.java.net/projects/jdk/11/)
+- [Java 17 or later](https://openjdk.java.net/projects/jdk/17/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
 - [jq](https://stedolan.github.io/jq/download/)
 - [OpenSSL](https://www.openssl.org/source/)

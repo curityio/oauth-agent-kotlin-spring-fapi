@@ -33,8 +33,7 @@ For further details see the [Architecture](/doc/Architecture.md) article.
 Build the OAuth agent into a Docker image:
 
 ```bash
-npm install
-npm run build
+./gradlew bootJar
 docker build -f Dockerfile -t oauthagent:1.0.0 .
 ```
 
@@ -76,8 +75,6 @@ CORS_ENABLED: 'false'
 ```
 
 ## OAuth Agent Development
-
-Use `./gradlew test` command to run a suite of integration tests, that can help you during development.
 
 See the [Setup](/doc/Setup.md) article for details on setting up an OAuth Agent development environment with an \
 instance of the Curity Identity Server. This enables a test driven approach to developing the OAuth Agent, without \
