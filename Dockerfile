@@ -6,4 +6,4 @@ COPY build/libs/oauth-agent-0.0.1-SNAPSHOT.jar /usr/api/
 RUN adduser --disabled-password --home /home/apiuser --gecos '' apiuser
 USER apiuser
 
-CMD ["java", "-jar", "/usr/api/oauth-agent-0.0.1-SNAPSHOT.jar"]
+# The docker-compose.yml file configures SSL trust and then runs the API
