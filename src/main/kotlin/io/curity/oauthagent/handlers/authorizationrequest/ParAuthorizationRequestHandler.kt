@@ -5,6 +5,9 @@ import io.curity.oauthagent.OAuthParametersProvider
 import io.curity.oauthagent.controller.StartAuthorizationParameters
 import org.springframework.stereotype.Service
 
+/*
+ * Creates the details for an OpenID Connect pushed authorization request
+ */
 @Service
 class ParAuthorizationRequestHandler(
         private val authorizationServerClient: AuthorizationServerClient,

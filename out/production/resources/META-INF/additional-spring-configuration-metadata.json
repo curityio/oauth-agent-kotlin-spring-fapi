@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "oauthagent.clientID",
+      "type": "java.lang.String",
+      "description": "Description for oauthagent.clientID."
+  }
+] }
