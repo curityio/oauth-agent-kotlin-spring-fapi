@@ -89,19 +89,16 @@ class LoginController(
                 }
             }
 
-            // Write the SameSite cookies
             val cookiesToSet = authorizationServerClient.getCookiesForTokenResponse(tokenResponse, true, csrfToken)
             response.headers[SET_COOKIE] = cookiesToSet
-
             isLoggedIn = true
+
         } else
         {
-            // See if we have a session cookie
             isLoggedIn = request.getCookie(cookieName.accessToken) != null
-
             if (isLoggedIn)
             {
-                // During an authenticated page refresh or opening a new browser tab, we must return the anti forgery token
+                // During a page reload, we must return the existing anti forgery token
                 csrfToken = cookieEncrypter.decryptValueFromCookie(request.getCookie(cookieName.csrf)!!)
             }
         }
