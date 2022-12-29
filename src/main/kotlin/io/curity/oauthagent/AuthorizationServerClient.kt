@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.curity.oauthagent.controller.StartAuthorizationParameters
 import io.curity.oauthagent.exception.*
 import io.curity.oauthagent.utilities.Grant
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
@@ -109,7 +110,7 @@ class AuthorizationServerClient(
         if (response.statusCode().is4xxClientError)
         {
             val text = response.awaitBody<String>()
-            throw AuthorizationClientException.create(grant, response.statusCode(), text)
+            throw AuthorizationClientException.create(grant, HttpStatus.valueOf(response.statusCode().value()), text)
         }
 
         return response.awaitBody()

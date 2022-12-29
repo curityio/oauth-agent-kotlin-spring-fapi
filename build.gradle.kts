@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.7.7" // 2.7.7 --> 3.0.1
+	id("org.springframework.boot") version "3.0.1"
 	id("io.spring.dependency-management") version "1.1.0"
 	id("com.adarshr.test-logger") version "3.2.0"
 	kotlin("jvm") version "1.7.0"
@@ -18,8 +18,8 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.7") // 2.7.7 --> 3.0.1
-	implementation("org.springframework.session:spring-session-core:2.7.0") // 2.7.0 --> 3.0.0
+	implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.1")
+	implementation("org.springframework.session:spring-session-core:3.0.0")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 	implementation("org.bitbucket.b_c:jose4j:0.9.2")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -30,18 +30,10 @@ dependencies {
 
 	implementation("org.apache.groovy:groovy:4.0.7")
 	implementation("org.apache.groovy:groovy-json:4.0.7")
-	testImplementation("org.springframework.boot:spring-boot-starter-test:2.7.7") // 2.7.7 --> 3.0.1
-	testImplementation(platform("org.spockframework:spock-bom:2.3-groovy-4.0"))
-	testImplementation("org.spockframework:spock-core:2.3-groovy-4.0")
+	testImplementation("org.springframework.boot:spring-boot-starter-test:3.0.1")
 	testImplementation("org.spockframework:spock-spring:2.3-groovy-4.0")
-	testImplementation("com.github.tomakehurst:wiremock-jre8:2.35.0")
-	testImplementation("org.apache.httpcomponents:httpclient:4.5.14")
-
-	/*
-	   PROBLEM: Groovy tests no longer work if I upgrade to Spring 3
-	   The OAuthAgentConfiguration is not autowired into TokenHandlerSpecification.groovy
-	   Perhaps caused by having to remove @ConstructorBinding from OAuthAgentConfigurationProperties
-	 */
+	testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
+	testImplementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
 }
 
 tasks.withType<KotlinCompile> {
