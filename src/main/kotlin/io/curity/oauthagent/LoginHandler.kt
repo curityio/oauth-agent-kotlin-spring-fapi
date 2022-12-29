@@ -1,6 +1,6 @@
-package io.curity.oauthagent.handlers.authorizationresponse
+package io.curity.oauthagent
 
-import io.curity.oauthagent.controller.OAuthQueryParams
+import io.curity.oauthagent.controller.StartAuthorizationParameters
 import io.curity.oauthagent.exception.AuthorizationResponseException
 import io.curity.oauthagent.exception.InvalidResponseJwtException
 import org.jose4j.jwt.JwtClaims
@@ -9,15 +9,28 @@ import org.jose4j.jwt.consumer.JwtConsumer
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 
-/*
- * Handles a JARM authorization response to receive the code and state
- */
 @Service
-class JarmAuthorizationResponseHandler(
+class LoginHandler(
+        private val authorizationServerClient: AuthorizationServerClient,
+        private val oAuthParametersProvider: OAuthParametersProvider,
         private val jwtConsumer: JwtConsumer
-): AuthorizationResponseHandler {
+) {
 
-    override suspend fun handleResponse(pageUrl: String?): OAuthQueryParams {
+    suspend fun createAuthorizationRequest(parameters: StartAuthorizationParameters?): AuthorizationRequestData {
+
+        val codeVerifier = oAuthParametersProvider.getCodeVerifier()
+        val state = oAuthParametersProvider.getState()
+
+        val authorizationRequestUrl = authorizationServerClient.getAuthorizationRequestObjectUri(state, codeVerifier, parameters)
+
+        return AuthorizationRequestData(
+                authorizationRequestUrl,
+                codeVerifier,
+                state
+        )
+    }
+
+    suspend fun handleAuthorizationResponse(pageUrl: String?): OAuthQueryParams {
 
         if (pageUrl == null)
         {
