@@ -34,7 +34,7 @@ Build the OAuth agent into a Docker image:
 
 ```bash
 ./gradlew bootJar
-docker build -f Dockerfile -t oauthagent:1.0.0 .
+docker build -t oauthagent:1.0.0 .
 ```
 
 Then deploy the Docker image with environment variables similar to these:
