@@ -49,6 +49,7 @@ oauth-agent:
     AUTHORIZE_ENDPOINT: 'https://login-internal/oauth/v2/oauth-authorize'
     AUTHORIZE_EXTERNAL_ENDPOINT: 'https://login.example.com/oauth/v2/oauth-authorize'
     TOKEN_ENDPOINT: 'https://login-internal/oauth/v2/oauth-token'
+    JWKS_URI: 'https://login-internal/oauth/v2/oauth-anonymous/jwks'
     USERINFO_ENDPOINT: 'https://login-internal/oauth/v2/oauth-userinfo'
     LOGOUT_ENDPOINT: 'https://login.example.com/oauth/v2/oauth-session/logout'
     CLIENT_ID: 'spa-client'

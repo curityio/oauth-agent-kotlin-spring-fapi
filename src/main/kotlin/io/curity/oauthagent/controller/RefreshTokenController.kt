@@ -18,7 +18,8 @@ class RefreshTokenController(
         private val cookieEncrypter: CookieEncrypter,
         private val cookieName: CookieName,
         private val cookieBuilder: CookieBuilder,
-        private val authorizationServerClient: AuthorizationServerClient
+        private val authorizationServerClient: AuthorizationServerClient,
+        private val idTokenValidator: IDTokenValidator,
 )
 {
     @PostMapping("", produces = ["application/json"])
@@ -31,7 +32,12 @@ class RefreshTokenController(
             ?: throw InvalidCookieException("No auth cookie was supplied in a token refresh call")
 
         val decryptedToken = cookieEncrypter.decryptValueFromCookie(refreshTokenCookie)
+
         val tokenResponse = authorizationServerClient.refreshAccessToken(decryptedToken)
+        if (!tokenResponse.idToken.isNullOrBlank()) {
+            idTokenValidator.validate(tokenResponse.idToken)
+        }
+
         val cookiesToSet = cookieBuilder.refreshCookies(tokenResponse)
 
         response.headers[SET_COOKIE] = cookiesToSet
