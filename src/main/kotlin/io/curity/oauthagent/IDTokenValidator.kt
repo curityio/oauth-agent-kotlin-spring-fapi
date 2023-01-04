@@ -24,13 +24,7 @@ class IDTokenValidator(private val config: OAuthAgentConfiguration) {
                     .setExpectedAudience(config.clientID)
                     .build()
 
-            val claims = jwtConsumer.processToClaims(idToken)
-            val azp = claims.getClaimValue("azp", String::class.java)
-            if (!azp.isNullOrBlank() || claims.audience.size > 0) {
-                if (azp != config.clientID) {
-                    throw InvalidIDTokenException()
-                }
-            }
+            jwtConsumer.processToClaims(idToken)
 
         } catch (exception: InvalidJwtException) {
             throw InvalidIDTokenException(exception)
