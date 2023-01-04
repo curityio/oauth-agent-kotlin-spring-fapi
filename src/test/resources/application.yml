@@ -17,13 +17,13 @@ oauthagent:
   trustedWebOrigins:
   - https://www.example.com
   corsEnabled: false
-  issuer: https://login.example.com/oauth
-  jwksUri: https://localhost:8443/oauth/jwks
-  authorizeEndpoint: https://localhost:8443/oauth/authorize
-  authorizeExternalEndpoint: https://login.example.com/oauth/authorize
-  logoutEndpoint: https://login.example.com/oauth/logout
-  tokenEndpoint: https://localhost:8443/oauth/token
-  userInfoEndpoint: https://localhost:8443/oauth/userinfo
+  issuer: https://login.example.com:8443/oauth/v2/oauth-anonymous
+  jwksUri: https://login.example.local:8443/oauth/jwks
+  authorizeEndpoint: https://login.example.local:8443/oauth/authorize
+  authorizeExternalEndpoint: https://login.example.com:8443/oauth/authorize
+  logoutEndpoint: https://login.example.com:8443/oauth/logout
+  tokenEndpoint: https://login.example.local:8443/oauth/token
+  userInfoEndpoint: https://login.example.local:8443/oauth/userinfo
 
   ssl:
     key-store: classpath:certs/example.client.test.p12

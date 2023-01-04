@@ -52,7 +52,7 @@ class TokenHandlerSpecification extends Specification {
         getCodeVerifier() >> "verifier"
     }
 
-    static def baseUrl = "https://localhost"
+    static def baseUrl = "https://api.example.local"
 
     static def loginStartPath = "/login/start"
     static def loginStartUrl
