@@ -15,8 +15,6 @@ class IDTokenValidator(private val config: OAuthAgentConfiguration) {
      */
     fun validate(idToken: String) {
 
-        if (!idToken.isEmpty()) {
-
         try {
             val jwtConsumer = JwtConsumerBuilder()
                     .setSkipSignatureVerification()
