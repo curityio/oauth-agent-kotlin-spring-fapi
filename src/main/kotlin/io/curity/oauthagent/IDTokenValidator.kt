@@ -15,19 +15,23 @@ class IDTokenValidator(private val config: OAuthAgentConfiguration) {
      */
     fun validate(idToken: String) {
 
-        try {
-            val jwtConsumer = JwtConsumerBuilder()
-                    .setSkipSignatureVerification()
-                    .setRequireExpirationTime()
-                    .setAllowedClockSkewInSeconds(30)
-                    .setExpectedIssuer(config.issuer)
-                    .setExpectedAudience(config.clientID)
-                    .build()
+        if (!idToken.isEmpty()) {
 
-            jwtConsumer.processToClaims(idToken)
+            try {
+                val jwtConsumer = JwtConsumerBuilder()
+                        .setSkipSignatureVerification()
+                        .setRequireExpirationTime()
+                        .setAllowedClockSkewInSeconds(30)
+                        .setExpectedIssuer(config.issuer)
+                        .setExpectedAudience(config.clientID)
+                        .build()
 
-        } catch (exception: InvalidJwtException) {
-            throw InvalidIDTokenException(exception)
+                jwtConsumer.processToClaims(idToken)
+
+            } catch (exception: InvalidJwtException) {
+
+                throw InvalidIDTokenException(exception)
+            }
         }
     }
 }
