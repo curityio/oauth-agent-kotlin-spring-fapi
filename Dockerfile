@@ -1,8 +1,12 @@
-FROM azul/zulu-openjdk-debian:17.0.4-jre
+FROM azul/zulu-openjdk-alpine:17-latest
 
+# Copy in resources
 WORKDIR /usr/api
 COPY build/libs/oauth-agent-0.0.1-SNAPSHOT.jar /usr/api/
+RUN apk --no-cache add curl
 
-RUN adduser --disabled-password --home /home/apiuser --gecos '' apiuser
+# Configure a low privilege user
+RUN addgroup -g 1001 apigroup
+RUN adduser -u 1001 -G apigroup -h /home/apiuser -D apiuser
 
-# The docker-compose.yml file configures SSL trust and then runs the API as the above user
+# The docker-compose.yml file configures SSL trust and then runs the API
