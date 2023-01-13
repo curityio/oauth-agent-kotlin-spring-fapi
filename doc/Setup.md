@@ -73,7 +73,7 @@ curl --cacert ./certs/example.ca.pem -X POST https://api.example.local:8080/oaut
 
 ## Run Integration Tests
 
-Run Spock integration tests with the following command.\
+Stop the API, then run Spock integration tests with the following command.\
 This spins up an instance of the API that uses a test configuration.\
 Integration tests use Wiremock to mock responses from the Curity Identity Server.
 
