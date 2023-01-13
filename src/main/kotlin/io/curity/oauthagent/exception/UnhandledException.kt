@@ -6,7 +6,7 @@ fun getExceptionStatusCode(ex: Throwable): Int {
 
     // If Spring has thrown the error, look for a response status, such as for malformed JSON input
     if (ex is ResponseStatusException) {
-        return ex.status.value()
+        return ex.statusCode.value()
     }
 
     // Default to 500 if we cannot determine an HTTP status

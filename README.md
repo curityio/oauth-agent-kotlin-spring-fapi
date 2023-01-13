@@ -28,9 +28,54 @@ The following endpoints are used so that the SPA uses simple one liners to perfo
 
 For further details see the [Architecture](/doc/Architecture.md) article.
 
-## OAuth Agent Development
+## Deployment
 
-Use `./gradlew test` command to run a suite of integration tests, that can help you during development.
+Build the OAuth agent into a Docker image:
+
+```bash
+./gradlew bootJar
+docker build -t oauthagent:1.0.0 .
+```
+
+Then deploy the Docker image with environment variables similar to these:
+
+```yaml
+oauth-agent:
+  image: oauthagent:1.0.0
+  hostname: oauthagent-host
+  environment:
+    PORT: 3001
+    TRUSTED_WEB_ORIGIN: 'https://www.example.com'
+    AUTHORIZE_ENDPOINT: 'https://login-internal/oauth/v2/oauth-authorize'
+    AUTHORIZE_EXTERNAL_ENDPOINT: 'https://login.example.com/oauth/v2/oauth-authorize'
+    TOKEN_ENDPOINT: 'https://login-internal/oauth/v2/oauth-token'
+    JWKS_URI: 'https://login-internal/oauth/v2/oauth-anonymous/jwks'
+    USERINFO_ENDPOINT: 'https://login-internal/oauth/v2/oauth-userinfo'
+    LOGOUT_ENDPOINT: 'https://login.example.com/oauth/v2/oauth-session/logout'
+    CLIENT_ID: 'spa-client'
+    CLIENT_SECRET: 'Password1'
+    REDIRECT_URI: 'https://www.example.com/'
+    POST_LOGOUT_REDIRECT_URI: 'https:www.example.com/'
+    SCOPE: 'openid profile'
+    COOKIE_DOMAIN: 'api.example.com'
+    COOKIE_NAME_PREFIX: 'example'
+    COOKIE_ENCRYPTION_KEY: 'fda91643fce9af565bdc34cd965b48da75d1f5bd8846bf0910dd6d7b10f06dfe'
+    CORS_ENABLED: 'true'
+    SERVER_CERT_P12_PATH: '/certs/myserver.p12'
+    SERVER_CERT_P12_PASSWORD: 'Password1'
+    CLIENT_CERT_P12_PATH: './certs/myclient.p12'
+    CLIENT_CERT_P12_PASSWORD: 'Password1'
+    CA_CERT_PEM_PATH: './certs/myrootca.pem'
+```
+
+If the OAuth Agent is deployed to the web domain, then set these properties:
+
+```yaml
+COOKIE_DOMAIN: 'www.example.com'
+CORS_ENABLED: 'false'
+```
+
+## OAuth Agent Development
 
 See the [Setup](/doc/Setup.md) article for details on setting up an OAuth Agent development environment with an \
 instance of the Curity Identity Server. This enables a test driven approach to developing the OAuth Agent, without \

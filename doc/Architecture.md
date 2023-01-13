@@ -14,12 +14,12 @@ This OAuth Agent is a stateless one. It takes the token response from an Authori
 
 The OAuth Agent exposes the following endpoints:
 
-1. POST `/login/start`
-2. POST `/login/end`
-3. GET `/userInfo`
-4. GET `/claims`
-5. POST `/refresh`
-6. POST `/logout`
+1. POST `/oauth-agent/login/start`
+2. POST `/oauth-agent/login/end`
+3. GET `/oauth-agent/userInfo`
+4. GET `/oauth-agent/claims`
+5. POST `/oauth-agent/refresh`
+6. POST `/oauth-agent/logout`
  
 ### POST `/login/start`
 
