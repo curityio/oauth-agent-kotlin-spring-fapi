@@ -12,7 +12,7 @@ oauthagent:
     sameSite: true
     secure: true
     domain: ${COOKIE_DOMAIN:api.example.local}
-    path: '/'
+    path: ${COOKIE_BASE_PATH:/}
 
   trustedWebOrigins:
   - ${TRUSTED_WEB_ORIGIN:https://www.example.local}

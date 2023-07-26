@@ -18,8 +18,8 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-webflux:3.0.1")
-	implementation("org.springframework.session:spring-session-core:3.0.0")
+	implementation("org.springframework.boot:spring-boot-starter-webflux:3.1.1")
+	implementation("org.springframework.session:spring-session-core:3.1.1")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.1")
 	implementation("org.bitbucket.b_c:jose4j:0.9.2")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -30,7 +30,7 @@ dependencies {
 
 	implementation("org.apache.groovy:groovy:4.0.7")
 	implementation("org.apache.groovy:groovy-json:4.0.7")
-	testImplementation("org.springframework.boot:spring-boot-starter-test:3.0.1")
+	testImplementation("org.springframework.boot:spring-boot-starter-test:3.1.1")
 	testImplementation("org.spockframework:spock-spring:2.3-groovy-4.0")
 	testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
 	testImplementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")

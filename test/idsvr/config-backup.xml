@@ -299,6 +299,8 @@
                   <trusted-ca>financial_grade_client_ca</trusted-ca>
                 </mutual-tls>
                 <redirect-uris>https://www.example.local/</redirect-uris>
+                <audience>spa-client</audience>
+                <audience>api.example.local</audience>
                 <scope>openid</scope>
                 <scope>profile</scope>
                 <user-authentication>
