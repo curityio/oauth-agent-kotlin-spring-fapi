@@ -11,7 +11,6 @@ plugins {
 
 group = "io.curity"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
 	mavenCentral()
@@ -34,6 +33,12 @@ dependencies {
 	testImplementation("org.spockframework:spock-spring:2.3-groovy-4.0")
 	testImplementation("com.github.tomakehurst:wiremock-jre8-standalone:2.35.0")
 	testImplementation("org.apache.httpcomponents.client5:httpclient5:5.2.1")
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 tasks.withType<KotlinCompile> {

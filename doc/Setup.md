@@ -8,7 +8,7 @@ how to set up the OAuth Agent together with an instance of the Curity Identity S
 Ensure that these tools are installed locally:
 
 - [Java 17 or later](https://openjdk.java.net/projects/jdk/17/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [Docker](https://www.docker.com/products/docker-desktop)
 - [jq](https://stedolan.github.io/jq/download/)
 - [OpenSSL](https://www.openssl.org/source/)
 
@@ -42,6 +42,7 @@ Run this script to create development certificates for the above domains:
 
 ## Configure Java SSL Trust
 
+First. set JAVA_GOME to poiiecho 
 Run the following command from the root folder to configure the OAuth Agent to trust the root certificate:  
 
 ```bash
@@ -83,16 +84,16 @@ Integration tests use Wiremock to mock responses from the Curity Identity Server
 
 ## Run End-to-End Tests
 
-Re-run the API, connected to the Curity Identity Server:
-
-```bash
-./gradlew bootRun
-```
-
-Then copy a license file into the `test/idsvr` folder and run the following commands:
+Then copy a `license.json` file into the `test/idsvr` folder and run the following commands:
 
 ```bash
 ./test/idsvr/deploy.sh
+```
+
+Ensure that the OAuth Agent is running:
+
+```bash
+./gradlew bootRun
 ```
 
 Then run a test script that uses curl requests to verify the OAuth Agent's operations:
