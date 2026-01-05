@@ -48,7 +48,7 @@ class OAuthAgentApplication {
             .setVerificationKeyResolver(httpsJwksKeyResolver)
             .setJwsAlgorithmConstraints(
                 AlgorithmConstraints.ConstraintType.PERMIT,
-                AlgorithmIdentifiers.RSA_USING_SHA256
+                AlgorithmIdentifiers.RSA_PSS_USING_SHA256
             )
             .build()
     }
